@@ -1,4 +1,9 @@
 #!/bin/bash
 
-rsync -avz --delete ../../ pi@10.42.1.100:/home/pi/
+if [ $# -ne 1 ]; then
+  echo "Usage: ./sync <node_ip>"
+  exit 1
+fi
+
+rsync -avz --delete ../../ pi@"$1":/home/pi/
 

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+BASE_IP=10.42.1
+
+nmap -n -sn "$BASE_IP".0/24 --exclude "$BASE_IP".1 -oG - | awk '/Up$/{print $2}'
