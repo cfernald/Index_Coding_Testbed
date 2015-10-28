@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PERM=600
+NET_DIR=/etc/NetworkManager/system-connections/
+FILE=research-ap
+
+sudo cp research-ap $NET_DIR
+sudo chmod $PERM $NET_DIR/$FILE
+sudo chown root:root $NET_DIR/$FILE
