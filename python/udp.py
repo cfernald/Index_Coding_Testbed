@@ -7,7 +7,7 @@ class UdpBroadcaster:
   
   def __init__(self, addr):
     self.soc = socket(AF_INET, SOCK_DGRAM)
-    self.soc.bind((self.addr, 0))
+    self.soc.bind((addr, 0))
     self.soc.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
   def send(self, message, port):
