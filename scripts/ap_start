@@ -9,3 +9,7 @@ sudo chmod $PERM $NET_DIR/$FILE
 sudo chown root:root $NET_DIR/$FILE
 
 sudo service network-manager restart
+sleep 5
+echo "Setting IP variable..."
+export AP_IP=`ifconfig wlan0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`
+echo $AP_IP

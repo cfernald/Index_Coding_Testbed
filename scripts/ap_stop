@@ -7,3 +7,4 @@ FILE=research-ap
 sudo rm $NET_DIR/$FILE
 
 sudo service network-manager restart
+export AP_IP=""
