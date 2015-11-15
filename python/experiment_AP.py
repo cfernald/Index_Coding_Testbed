@@ -3,7 +3,7 @@ __author__ = 'ryan'
 import udp
 import socket
 from time import sleep,time
-messages = [1,2,3]
+messages = ["1","2"]
 
 ackSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ackSock.bind(("127.0.0.1", 5005))
@@ -11,14 +11,14 @@ ackSock.bind(("127.0.0.1", 5005))
 # initial round
 broadcaster = udp.UdpBroadcaster()
 for message in messages:
-    broadcaster.send(message)
+    broadcaster.send(message, 5000)
 
 
 unReceived = set(messages)
 rounds = []
 while len(unReceived)>1:
-    cur = time.time()
-    while time.time()-cur < 0.001:
+    cur = time()
+    while time()-cur < 0.001:
         unReceived.remove(int(ackSock.recvfrom(1024)))
     rounds.append(unReceived)
 
