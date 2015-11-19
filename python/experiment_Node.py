@@ -15,6 +15,7 @@ sideInfo = set()
 while True:
     data = rec.rec(1024)
     if data==me:
+        print "Recieved my packet"
         # redundancy, yo
         for i in range(10):
             acknowledgerSock.sendto(me, ("10.42.0.1", 5005))

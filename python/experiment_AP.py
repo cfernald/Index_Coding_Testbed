@@ -3,10 +3,10 @@ __author__ = 'ryan'
 import udp
 import socket
 from time import sleep,time
-messages = ["1","2"]
+messages = ["1", "2"]
 
 ackSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ackSock.bind(("127.0.0.1", 5005))
+ackSock.bind(("10.42.0.1", 5005))
 
 # initial round
 broadcaster = udp.UdpBroadcaster()
