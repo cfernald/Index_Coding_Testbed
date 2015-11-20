@@ -10,7 +10,7 @@ class UdpBroadcaster:
     self.sock.bind((addr, 0))
     self.sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
-  def send(self, message, port=50000):
+  def send(self, message, port=5000):
     self.sock.sendto(message, ('<broadcast>', port))
 
 #import socket, select
@@ -18,7 +18,7 @@ class UdpBroadcaster:
 class UdpReceiver:
   'Receives UDP packets on the network'
 
-  def __init__(self, port=50000):
+  def __init__(self, port=5000):
     self.sock = socket(AF_INET, SOCK_DGRAM)
     self.sock.bind(('', port))
     self.sock.setblocking(0)
