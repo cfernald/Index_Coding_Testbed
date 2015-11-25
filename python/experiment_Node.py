@@ -1,11 +1,11 @@
 __author__ = 'ryan'
 import socket
 from udp import *
+from ack_handler import *
 
 me = "1"
 
-acknowledgerSock = socket(AF_INET, SOCK_DGRAM)
-
+ack_sender = AckSender("127.0.0.1")
 
 #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #sock.bind(("127.0.0.1", 5005))
@@ -18,6 +18,6 @@ while True:
         print "Recieved my packet"
         # redundancy, yo
         for i in range(10):
-            acknowledgerSock.sendto(me, ("10.42.0.1", 5005))
+            ack_sender.ack(me, me)
     else:
         sideInfo.add(data)

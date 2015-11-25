@@ -4,7 +4,7 @@ MYPORT = 50000
 
 from udp import *
 
-broad = UdpBroadcaster('')
+broad = UdpBroadcaster('10.42.0.1')
 broad.send("hello", 50000)
 
 '''import sys, time

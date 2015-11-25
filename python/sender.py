@@ -1,6 +1,6 @@
 import socket
 
-ip = "10.42.0.1"
+ip = "10.42.0.42"
 port = 5005
 message = "hello world"
 

@@ -2,25 +2,43 @@ __author__ = 'ryan'
 
 import udp
 import socket
+import thread
+import ack_handler
 from time import sleep,time
-messages = ["1", "2"]
 
-ackSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-ackSock.bind(("10.42.0.1", 5005))
+# Static Variables
+messages = ["1"]
+PORT = 5000
+MY_IP = '127.0.0.1'
+
+# setup the ack listener
+acks = ack_handler.AckListener(len(messages))
+acks.start()
 
 # initial round
-broadcaster = udp.UdpBroadcaster()
+broadcaster = udp.UdpBroadcaster(MY_IP)
 for message in messages:
-    broadcaster.send(message, 5000)
+    print "Sending Message:", message
+    broadcaster.send(message, PORT)
 
 
 unReceived = set(messages)
 rounds = []
-while len(unReceived)>1:
+
+sleep(10)
+acks.stop()
+
+'''while len(unReceived)>1:
     cur = time()
-    while time()-cur < 0.001:
-        unReceived.remove(int(ackSock.recvfrom(1024)))
-    rounds.append(unReceived)
+    ack = ackSock.recvfrom(1024)
+    if (ack != None):
+        unReceived.remove(int(ack))
+        rounds.append(unReceived)
+
+    for message in set:
+        print "Resending Message:", message
+        broadcaster.send(message, PORT)
+
 
 print len(rounds)
-print rounds
+print rounds'''
