@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This is the file that will eventually control all of th testing
+# This file will push all the code to the nodes and then run the tests. 
+# New code must be supported by this script
+
+NUM_ARGS=1
+USAGE="Usage: start {xml-test-file} "
+
+if [ $# -ne $NUM_ARGS ]; then
+    echo $USAGE
+    exit 1
+fi
+
+# lets explore the network and see what is connected
+echo "finding nodes..."
+echo "NODES DISABLED UNTIL NETWORKING DONE"
+#nodes=`./scripts/get_hosts`
+echo "found nodes: $nodes"
+
+# lets push the code to the nodes
+echo "updating node's code"
+for node in $nodes; do
+    ./scripts/sync $node
+done
+echo "done updating code"
+
+
