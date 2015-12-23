@@ -10,13 +10,14 @@ class AckListener:
     'Handles ack messages and tracking'
 
     def __init__(self, numNodes):
-        self.acks = [[0 for x in range(numNodes)] for x in range(numNodes)]
+        self.acks = [[0 for x in range(numNodes + 1)] for x in range(numNodes + 1)]
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("", ACK_PORT))
         self.sock.settimeout(ACK_TIMEOUT)
         self.timeouts = 0
         self.run = False
 
+    'This is intended to be run as a thread see the start method'
     def listen(self):
         while (self.run):
             print "checking for ack"
@@ -24,7 +25,16 @@ class AckListener:
             try:
                 ack = self.sock.recvfrom(ACK_BUFFER)
                 print "Got ack:", ack
-                # need to come up with a format for the acks
+                
+                # break of the message into it's info
+                broken = ack[0].split()
+                node = int (broken[0])
+                msgId = int (broken[1])
+                
+                # record the ack
+                self.acks[node][msgId] = 1
+
+            # Timeouts will happen, we dont need to do anything
             except socket.timeout:
                 self.timeouts += 1
 
@@ -46,5 +56,7 @@ class AckSender:
         self.ip = ip
 
     def ack(self, myId, messageId):
-        self.sock.sendto(myId, (self.ip, ACK_PORT))
+        print "sending ack for", myId, messageId
+        msg = "{0} {1}".format(myId, messageId)
+        self.sock.sendto(msg, (self.ip, ACK_PORT))
 

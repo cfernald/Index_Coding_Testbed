@@ -1,9 +1,13 @@
 __author__ = 'ryan'
-import socket
+import socket, sys
 from udp import *
 from ack_handler import *
 
-me = "1"
+if (len(sys.argv) < 2):
+    print "Usage: node.py {id}"
+    exit(1)
+
+me = sys.argv[1]
 
 ack_sender = AckSender("127.0.0.1")
 
