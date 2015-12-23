@@ -21,7 +21,7 @@ while True:
     if data==me:
         print "Recieved my packet"
         # redundancy, yo
-        for i in range(10):
-            ack_sender.ack(me, me)
+        for i in range(1):
+            ack_sender.ack(me, data)
     else:
         sideInfo.add(data)

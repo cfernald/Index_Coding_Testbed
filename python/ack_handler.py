@@ -10,7 +10,7 @@ class AckListener:
     'Handles ack messages and tracking'
 
     def __init__(self, numNodes):
-        self.acks = [[0 for x in range(numNodes + 1)] for x in range(numNodes + 1)]
+        self.acks = [[0 for x in range(numNodes)] for x in range(numNodes)]
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("", ACK_PORT))
         self.sock.settimeout(ACK_TIMEOUT)
@@ -20,7 +20,6 @@ class AckListener:
     'This is intended to be run as a thread see the start method'
     def listen(self):
         while (self.run):
-            print "checking for ack"
             ack = None 
             try:
                 ack = self.sock.recvfrom(ACK_BUFFER)
