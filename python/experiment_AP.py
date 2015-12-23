@@ -21,7 +21,7 @@ broadcaster = udp.UdpBroadcaster(MY_IP)
 
 toSend = messages
 while (len(toSend) > 0):
-    for message in messages:
+    for message in toSend:
         print "Sending Message:", message
         broadcaster.send(message, PORT)
 
