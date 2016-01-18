@@ -5,5 +5,5 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-rsync -avz --delete ../../ pi@"$1":/home/pi/research
+rsync -avz --delete ../../ blue@"$1":/home/blue/research
 
