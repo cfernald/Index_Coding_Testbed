@@ -10,7 +10,7 @@ from time import sleep,time
 # Static Variables
 messages = ["0"]
 PORT = 5000
-MY_IP = '127.0.0.1'
+MY_IP = '10.42.0.1'
 
 # setup the ack listener
 acks = ack_handler.AckListener(len(messages))
