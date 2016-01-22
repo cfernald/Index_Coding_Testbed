@@ -8,7 +8,7 @@ import algorithms
 from time import sleep,time
 
 # Static Variables
-messages = ["0"]
+messages = ["2"]
 PORT = 5000
 MY_IP = '10.42.0.1'
 

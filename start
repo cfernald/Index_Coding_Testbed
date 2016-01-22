@@ -6,6 +6,7 @@
 
 NUM_ARGS=1
 USAGE="Usage: start {xml-test-file} "
+USERS="blue"
 
 if [ $# -ne $NUM_ARGS ]; then
     echo $USAGE
@@ -14,9 +15,8 @@ fi
 
 # lets explore the network and see what is connected
 echo "finding nodes..."
-echo "NODES DISABLED UNTIL NETWORKING DONE"
-#nodes=`./scripts/get_hosts`
-echo "found nodes: $nodes"
+nodes=`./scripts/get_hosts`
+echo "Found nodes: $nodes"
 
 # lets push the code to the nodes
 echo "updating node's code"
@@ -25,4 +25,15 @@ for node in $nodes; do
 done
 echo "done updating code"
 
+echo "Starting nodes..."
+for node in $nodes; do
+    id=`ssh "$USERS@$node" hostname | cut -c6-`
+    echo "Starting node-$id"
+    ssh "$USERS@$node" "python research/364d-udp/python/experiment_Node.py $id &" 
+done
+echo "nodes started"
+
+echo "Starting experiment."
+python python/experiment_AP.py
+echo "Done."
 
