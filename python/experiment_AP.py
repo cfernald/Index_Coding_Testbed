@@ -10,9 +10,13 @@ import sys
 from time import sleep,time
 
 # Static Variables
-messages = ["0"]
+messages = sys.argv[1:]
 PORT = 5000
 MY_IP = '10.42.0.1'
+
+
+print "Starting experiment with messages.."
+print messages
 
 # setup the ack listener
 acks = ack_handler.AckListener(len(messages))

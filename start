@@ -29,14 +29,16 @@ if [ $UPDATE ]; then
 fi
 
 echo "Starting nodes..."
+ids=()
 for node in $nodes; do
     id=`ssh "$USERS@$node" hostname | cut -c6-`
+    ids+=("$id")
     echo "Starting node-$id"
     ssh "$USERS@$node" "./research/364d-udp/node_start $id" 
 done
-echo "nodes started"
+echo "nodes started: $ids"
 
 echo "Starting experiment."
-python python/experiment_AP.py
+python python/experiment_AP.py "$ids"
 echo "Done."
 
