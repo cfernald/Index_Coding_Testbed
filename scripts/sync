@@ -5,5 +5,5 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-rsync -avz --delete ../../ blue@"$1":/home/blue/research
+rsync -avz --delete --exclude .git/ ~/research/ blue@"$1":/home/blue/research
 
