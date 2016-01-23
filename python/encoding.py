@@ -9,10 +9,13 @@ class AppendEncoding:
 			self.encoding = self.encode(message)
 	
 	def __add__(self, other):
-		return AppendEncoding(self.encoding + other.encoding, rawEncoding=True)
+	    return AppendEncoding(self.encoding + other.encoding, rawEncoding=True)
 
 	def __sub__(self, other):
 		return AppendEncoding(self.encoding - other.encoding, rawEncoding=True)
+
+	def __mul__(self, other):
+        return AppendEncoding(self.encoding * other.encoding, rawEncoding=True) # indent?
 	
 	def __eq__(self, other):
 		return self.encoding == other.encoding
@@ -48,7 +51,7 @@ class AppendEncoding:
 				del charBuffer[:]
 		return "".join(message)
 
-
+'''
 messageLength = 100
 message1 = []
 message2 = []
@@ -80,3 +83,4 @@ decodeEnd = time.time()
 print("\n{0} to encode; {1} to decode".format(encodeEnd-encodeStart, decodeEnd-decodeStart))
 
 # print comb - (message1+message2)
+'''
