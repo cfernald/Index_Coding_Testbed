@@ -36,7 +36,7 @@ def APRankReduce(targetRank, sideInfoMatrix, tolerance):
 
     while currentRank>targetRank and projectionDistance>(tolerance/(n**3)): # and CheckInf<n-Rnk+5, in matlab script
         iteration += 1
-        print iteration
+        print(iteration)
 
         U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
         currentRank = 0

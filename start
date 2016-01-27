@@ -40,6 +40,6 @@ done
 echo "nodes started: $ids"
 
 echo "Starting experiment."
-python python/experiment_AP.py "$ids"
+python3 python/experiment_AP.py "$ids"
 echo "Done."
 

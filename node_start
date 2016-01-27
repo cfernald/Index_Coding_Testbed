@@ -32,6 +32,6 @@ if [ -f $PID_FILE ]; then
     fi
 fi
 
-python "$BASE/python/experiment_Node.py" $1 >> $LOG_FILE 2>&1 &
+python3 "$BASE/python/experiment_Node.py" $1 >> $LOG_FILE 2>&1 &
 echo "$!" > $PID_FILE
 

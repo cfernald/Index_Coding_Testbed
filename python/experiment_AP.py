@@ -2,7 +2,6 @@ __author__ = 'ryan'
 
 import udp
 import socket
-import thread
 import ack_handler
 import algorithms
 import signal 
@@ -12,20 +11,20 @@ from time import sleep,time
 
 # Static Variables
 nodes = sys.argv[1].split()
-nodes = map(int, nodes)
+nodes = list(map(int, nodes))
 nodes.sort()
 PORT = 5000
 MY_IP = '127.0.0.1'
 MSG_LEN = 100
 
-print "Starting experiment with nodes: ", nodes
+print("Starting experiment with nodes: ", nodes)
 
 # setup the ack listener
 acks = ack_handler.AckListener(len(nodes))
 
 # setup shutdown listener
 def signal_handler(signal, frame):
-    print "Shutting down...\n"
+    print("Shutting down...\n")
     acks.stop()
     sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)

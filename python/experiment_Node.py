@@ -4,7 +4,7 @@ from udp import *
 from ack_handler import *
 
 if (len(sys.argv) < 2):
-    print "Usage: node.py {id}"
+    print("Usage: node.py {id}")
     exit(1)
 
 me = int(sys.argv[1])
@@ -22,4 +22,4 @@ while True:
         ack_sender.ack(me, nodes[0])
         sideInfo[nodes[0]] = data
     else:
-        print "we haven't implemented decoding yet"
+        print("we haven't implemented decoding yet")

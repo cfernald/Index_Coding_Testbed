@@ -23,12 +23,12 @@ class AckListener:
             ack = None 
             try:
                 ack = self.sock.recvfrom(ACK_BUFFER)
-                print "Got ack:", ack
+                print("Got ack:", ack)
+                data = ack[0]
                 
                 # break of the message into it's info
-                broken = ack[0].split()
-                node = int (broken[0])
-                msgId = int (broken[1])
+                node = int (data[0])
+                msgId = int (data[1])
                 
                 # record the ack
                 self.acks[node][msgId] = 1
@@ -55,7 +55,7 @@ class AckSender:
         self.ip = ip
 
     def ack(self, myId, messageId):
-        print "sending ack for", myId, messageId
-        msg = "{0} {1}".format(myId, messageId)
+        print("sending ack for", myId, messageId)
+        msg = bytearray([myId, messageId])
         self.sock.sendto(msg, (self.ip, ACK_PORT))
 
