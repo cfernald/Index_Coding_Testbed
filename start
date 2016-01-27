@@ -7,7 +7,7 @@
 NUM_ARGS=1
 USAGE="Usage: start {xml-test-file} "
 USERS="blue"
-UPDATE=1
+UPDATE=0
 
 if [ $# -ne $NUM_ARGS ]; then
     echo $USAGE
@@ -20,7 +20,7 @@ source scripts/get_hosts
 echo "Found nodes: $nodes"
 
 # lets push the code to the nodes
-if [ $UPDATE ]; then
+if [ $UPDATE -gt 0 ]; then
     echo "updating node's code"
     for node in $nodes; do
         ./scripts/sync $node
@@ -29,10 +29,11 @@ if [ $UPDATE ]; then
 fi
 
 echo "Starting nodes..."
-ids=()
+ids=""
+echo $nodes
 for node in $nodes; do
     id=`ssh "$USERS@$node" hostname | cut -c6-`
-    ids+=("$id")
+    ids="$ids$id "
     echo "Starting node-$id"
     ssh "$USERS@$node" "./research/364d-udp/node_start $id" 
 done

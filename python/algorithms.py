@@ -1,22 +1,22 @@
 import numpy as np
 import math
+import messages
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
-def reduceMessages(messages, acks):
-    return roundRobin(messages, acks)
+def reduceMessages(msgs, acks):
+    return roundRobin(msgs, acks)
 
-def roundRobin(messages, acks):
+def roundRobin(msgs, acks):
     'This method just identifies the the missing 1s along the diagnal'
     
     result = []
 
-    for i in range(0, len(messages)):
+    for i in range(0, len(msgs)):
         if (acks[i][i] == 0):
-            result.append(messages[i])
+            result.append(messages.format_msg([i], msgs[i]))
 
     return result
-
 
 
 def APRankReduce(targetRank, sideInfoMatrix, tolerance):
