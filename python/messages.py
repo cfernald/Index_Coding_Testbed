@@ -55,7 +55,12 @@ def combine(nodes, msgs):
         
     return format_msg(nodes, int.to_bytes(max_size + 1, byteorder='big'))
 
-        
+#def extract(node, msg, side_info):
+     #nodes = get_nodes(msg)
+     #data = (bytearray) get_data(msg)
+
+     
+
 
     
     
