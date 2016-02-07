@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import messages
+import random
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
@@ -62,6 +63,59 @@ def APRankReduce(targetRank, sideInfoMatrix, tolerance):
 
     return M
 
+# in M, 2s are considered *. Will return a set of vectors where 1 entries should be included
+def LDG(sideInfoMatrix):
+	M = sideInfoMatrix # this shallow copies and mangles the original matrix (change to copy.deepcopy() if you want to retain sideInfoMatrix)
+	i = 0
+	numNodes = len(M[0])
+	while i < len(M): # while we haven't gone through every row (the number of rows changes as we reduce, which is why this is not a for loop)
+		rowIndices_available = set(x for x in range(len(M)) if x!=i)
+		thisRow = M[i]
+		mergedRow = [] # really only manipulated in the while loop, but it needs to be scoped above as to add to the index code
 
-#test = np.array([[1, 2, 2, 0],[0, 1, 0, 0],[2, 0, 1, 0], [2, 2, 2, 1]])
-#print APRankReduce(2,test,0.75)
+		# while we haven't tried to merge all rows with rowsToSelectFrom[i] but itself 
+		while len(rowIndices_available) > 0: 
+			mergeRowIndex = random.sample(rowIndices_available, 1)[0] # randomly select something to try and merge
+			rowToMerge = M[mergeRowIndex]
+			mergedRow = []
+			# iterate through the two rows and merge, if possible
+			for j in range(numNodes):
+				# one is a 0 and the other is a 1; this row cannot be merged
+				if thisRow[j]+rowToMerge[j] == 1:
+					rowIndices_available.remove(mergeRowIndex)
+					break
+				elif thisRow[j]+rowToMerge[j] == 0:
+					mergedRow.append(0)
+				# both 2s, i.e. don't cares
+				elif thisRow[j]+rowToMerge[j] == 4:
+					mergedRow.append(2)
+				# a don't care and a 0
+				elif thisRow[j]+rowToMerge[j] == 2:
+					if thisRow[j]==rowToMerge[j]:
+						print M, "j: ", j, "\n", thisRow, "\n", rowToMerge, "\n", mergeRowIndex, "\n", mergedRow
+						raw_input("error \n")
+						raise BaseException("debug: somehow two 1s were merged?")
+					mergedRow.append(0)
+				# a 1 and a don't care
+				elif thisRow[j]+rowToMerge[j] == 3:
+					mergedRow.append(1)
+				else:
+					print thisRow, rowToMerge, mergedRow
+					raw_input("error \n")
+			#end for
+	
+			# if we successfully merged the row
+			if len(mergedRow) == numNodes:
+				M[i] = mergedRow
+				M = np.delete(M,mergeRowIndex,0)
+				print "successful merge: \n", M, "\n\n"
+				break
+		
+		i += 1
+	# end "for all rows" while loop
+	
+	return np.array(M)
+		
+	
+#test = np.array([[1, 2, 2, 0],[2, 1, 2, 0],[0, 2, 1, 2], [2, 0, 0, 1]])
+#print LDG(test)
