@@ -1,8 +1,9 @@
 import messages
+import time
 
 # constants
-NUM_NODES = 20
-MSG_LEN = 10
+NUM_NODES = 100
+MSG_LEN = 1000000
 
 # testing procedure
 nodes = [i for i in range(NUM_NODES)]
@@ -18,8 +19,12 @@ for i in range(NUM_NODES):
     assert i in c_nodes
 
 print("Decoding messages...")
+total = 0
 for node in nodes:
+    time1 = time.time()
     result = messages.extract(node, combined, msgs)
+    time2 = time.time()
     assert result == msgs[node]
+    total += time2-time1
 
-print("Test passed")
+print("Test passed\n\tavg decode time:", total/NUM_NODES)
