@@ -2,8 +2,8 @@ import messages
 import time
 
 # constants
-NUM_NODES = 100
-MSG_LEN = 1000000
+NUM_NODES = 15
+MSG_LEN = 10000
 
 # testing procedure
 nodes = [i for i in range(NUM_NODES)]

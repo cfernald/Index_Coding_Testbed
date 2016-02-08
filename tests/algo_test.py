@@ -17,6 +17,8 @@ owner_lost = 0
 for i in range(RUNS):
     #print("Running round", i, "...")
     acks = [[0 for x in range(NUM_NODES)] for y in range(NUM_NODES)]
+    for i in range(NUM_NODES):
+        acks[i][i] = 1
     msgs = messages.gen_messages(NUM_NODES, MSG_LEN)
     toSend = []
     for i in range(len(msgs)):
@@ -37,7 +39,7 @@ for i in range(RUNS):
 
                     if lacking <= 1:
                         for n in msg_nodes:
-                            acks[node][n] = 1;
+                            acks[node][n] = 2;
 
                 else:
                     lost += 1

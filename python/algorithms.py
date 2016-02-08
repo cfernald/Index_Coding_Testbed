@@ -14,7 +14,7 @@ def roundRobin(msgs, acks):
     result = []
 
     for i in range(0, len(msgs)):
-        if (acks[i][i] == 0):
+        if (acks[i][i] == 1):
             result.append(messages.format_msg([i], msgs[i]))
 
     return result
