@@ -1,4 +1,5 @@
 import random
+from math import log
 
 def gen_messages(num, length):
     'This method generates random data to act as a message'
@@ -47,23 +48,45 @@ def get_nodes(msg):
 def combine(nodes, msgs):
     max_size = max(len(msgs[n]) for n in nodes)
     marker = bytearray([1])
-    result = long(0)
+    result = 0
     
     for n in nodes:
-        d = data[n]
+        d = msgs[n]
         result += int.from_bytes(marker + d, byteorder='big', signed=False)
         
-    return format_msg(nodes, int.to_bytes(max_size + 1, byteorder='big'))
+    return format_msg(nodes, result.to_bytes(max_size + 1, byteorder='big'))
 
-#def extract(node, msg, side_info):
-     #nodes = get_nodes(msg)
-     #data = (bytearray) get_data(msg)
+def extract(node, msg, side_info):
+    nodes = get_nodes(msg)
+    
+    # make sure this is possible
+    assert node in nodes
+    
+    data = get_data(msg)
+    data_int = int.from_bytes(data, byteorder='big', signed=False)
+    marker = bytearray([1])
 
-     
+    for n in nodes:
+        # check to see if this is our target
+        if n == node:
+            continue
 
+        side = side_info[n]
+        # make sure we have the side info
+        if side == None or len(side) == 0:
+            return None
+
+        # subtract the side info
+        data_int -= int.from_bytes(marker + side, byteorder='big', signed=False)
+    
+    assert(data_int != 0)
+    length = int(log(data_int, 256)) + 1
+    return data_int.to_bytes(length, byteorder='big')[1:]
 
     
+        
+
+        
     
-
-
+        
 

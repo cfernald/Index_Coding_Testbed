@@ -1,9 +1,14 @@
 #! /bin/bash
 
-files=`ls "../python/"`
+dir="tmp"
 
-cp ../python/*.py .
+mkdir $dir
 
-python3 algo_test.py
+cp ../python/*.py $dir
+cp * $dir
 
-rm $files > /dev/null 2>&1
+python3 "$dir/algo_test.py"
+printf "\nAlgorithms test completed\n\n\nStarting encoding test\n\n"
+python3 "$dir/encoding_test.py"
+
+rm -rf $dir

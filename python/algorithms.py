@@ -92,7 +92,7 @@ def LDG(sideInfoMatrix):
 				# a don't care and a 0
 				elif thisRow[j]+rowToMerge[j] == 2:
 					if thisRow[j]==rowToMerge[j]:
-						print M, "j: ", j, "\n", thisRow, "\n", rowToMerge, "\n", mergeRowIndex, "\n", mergedRow
+						print(M, "j: ", j, "\n", thisRow, "\n", rowToMerge, "\n", mergeRowIndex, "\n", mergedRow)
 						raw_input("error \n")
 						raise BaseException("debug: somehow two 1s were merged?")
 					mergedRow.append(0)
@@ -100,7 +100,7 @@ def LDG(sideInfoMatrix):
 				elif thisRow[j]+rowToMerge[j] == 3:
 					mergedRow.append(1)
 				else:
-					print thisRow, rowToMerge, mergedRow
+					print(thisRow, rowToMerge, mergedRow)
 					raw_input("error \n")
 			#end for
 	
@@ -108,7 +108,7 @@ def LDG(sideInfoMatrix):
 			if len(mergedRow) == numNodes:
 				M[i] = mergedRow
 				M = np.delete(M,mergeRowIndex,0)
-				print "successful merge: \n", M, "\n\n"
+				print("successful merge: \n", M, "\n\n")
 				break
 		
 		i += 1

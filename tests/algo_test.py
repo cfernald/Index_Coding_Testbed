@@ -15,7 +15,7 @@ runs = 0
 owner_lost = 0
 
 for i in range(RUNS):
-    print("Running round", i, "...")
+    #print("Running round", i, "...")
     acks = [[0 for x in range(NUM_NODES)] for y in range(NUM_NODES)]
     msgs = messages.gen_messages(NUM_NODES, MSG_LEN)
     toSend = []
@@ -46,7 +46,7 @@ for i in range(RUNS):
 
         toSend = algorithms.reduceMessages(msgs, acks)          
     
-    print("Done.")
+    #print("Done.")
 
 
 print("************* Testing Done **************")
