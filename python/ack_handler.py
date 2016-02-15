@@ -10,11 +10,18 @@ class AckListener:
     'Handles ack messages and tracking'
 
     def __init__(self, numNodes):
+        # set up acks list
         self.acks = [[0 for x in range(numNodes)] for x in range(numNodes)]
+        for i in range(len(self.acks)):
+            self.acks[i][i] = 1
+        
+        # UDP socket setup
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("", ACK_PORT))
         self.sock.settimeout(ACK_TIMEOUT)
         self.timeouts = 0
+        
+        # Set running flag
         self.run = False
 
     'This is intended to be run as a thread see the start method'

@@ -7,7 +7,7 @@
 NUM_ARGS=1
 USAGE="Usage: start {xml-test-file} "
 USERS="blue"
-UPDATE=0
+UPDATE=1
 
 if [ $# -ne $NUM_ARGS ]; then
     echo $USAGE
@@ -31,11 +31,24 @@ fi
 echo "Starting nodes..."
 ids=""
 echo $nodes
+node_num=0
 for node in $nodes; do
+    # Get the machines node number
     id=`ssh "$USERS@$node" hostname | cut -c6-`
-    ids="$ids$id "
-    echo "Starting node-$id"
-    ssh "$USERS@$node" "./research/364d-udp/node_start $id" 
+    #ids="$ids$id "
+
+    # Start the nodes
+    echo "Starting node-$id as node: $node_num"
+
+    # Assign the node a test number and start the node
+    ssh "$USERS@$node" "./research/364d-udp/node_start $node_num"
+    if [ $? -gt 0 ]; then
+        echo "Failed to start node, check node logs"
+        exit 1
+    fi
+
+    ids="$ids$node_num "
+    node_num=`expr $node_num + 1` 
 done
 echo "nodes started: $ids"
 

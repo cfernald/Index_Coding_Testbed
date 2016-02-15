@@ -47,7 +47,7 @@ while (len(toSend) > 0):
         broadcaster.send(message, PORT)
 
     sleep(1)
-    toSend = algorithms.reduceMessages(msgs, acks.acks)
+    toSend = algorithms.reduceMessages(msgs, acks.acks, "rr")
 
 acks.stop()
 
