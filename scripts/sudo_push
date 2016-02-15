@@ -4,5 +4,5 @@
 for node in $nodes
 do
     echo "Pushing \"$@\" to $node"
-    ssh -tt "blue@$node" $@
+    ssh "blue@$node" "echo screen | sudo -S $@"
 done
