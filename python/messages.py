@@ -1,4 +1,5 @@
 import random
+import algorithms
 from math import log
 
 def gen_messages(num, length):
@@ -28,11 +29,12 @@ def format_msg(nodes, msg):
 def gen_data(seed, length):
     'Generates random data in bytes of the specified length'
 
-    random.seed(seed)
+    rand = random.Random()
+    rand.seed(seed)
 
     data = []
     for i in range(0, length):
-        byte = random.getrandbits(8)
+        byte = rand.getrandbits(8)
         data.append(byte)
 
     return bytearray(data)
@@ -45,7 +47,24 @@ def get_nodes(msg):
     num = msg[0]
     return list(map(int, msg[1:num + 1]))
 
+def combine_row(row, msgs):
+    nodes = []
+
+    for i in range(len(row)):
+        # for now, nothings are ignored
+        if row[i] != algorithms.DONT_CARE:
+            if row[i] > 0:
+                nodes.append(i)
+    
+    if (len(nodes) > 0):
+        return combine(nodes, msgs)
+    else:
+        return None
+
 def combine(nodes, msgs):
+    if (len(nodes) == 1):
+        return format_msg(nodes, msgs[nodes[0]])
+
     max_size = max(len(msgs[n]) for n in nodes)
     marker = bytearray([1])
     result = 0

@@ -2,11 +2,29 @@ import numpy as np
 import math
 import messages
 import random
+import copy
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
-def reduceMessages(msgs, acks):
-    return roundRobin(msgs, acks)
+DONT_CARE = -1
+
+def reduceMessages(msgs, acks, algo="rr"):
+    if (algo == "rr"):
+        return roundRobin(msgs, acks)
+
+    new_messages = []
+    
+    #print(acks)
+    if algo == "ldg":
+        result = LDG(acks)
+    
+    for i in range(len(result)):
+        msg = messages.combine_row(result[i], msgs)
+        if msg != None:
+            new_messages.append(msg)
+
+    return new_messages
+
 
 def roundRobin(msgs, acks):
     'This method just identifies the the missing 1s along the diagnal'
@@ -65,7 +83,7 @@ def APRankReduce(targetRank, sideInfoMatrix, tolerance):
 
 # in M, 2s are considered *. Will return a set of vectors where 1 entries should be included
 def LDG(sideInfoMatrix):
-	M = sideInfoMatrix # this shallow copies and mangles the original matrix (change to copy.deepcopy() if you want to retain sideInfoMatrix)
+	M =copy.deepcopy(sideInfoMatrix) # this shallow copies and mangles the original matrix (change to copy.deepcopy() if you want to retain sideInfoMatrix)
 	i = 0
 	numNodes = len(M[0])
 	while i < len(M): # while we haven't gone through every row (the number of rows changes as we reduce, which is why this is not a for loop)
@@ -108,11 +126,16 @@ def LDG(sideInfoMatrix):
 			if len(mergedRow) == numNodes:
 				M[i] = mergedRow
 				M = np.delete(M,mergeRowIndex,0)
-				print("successful merge: \n", M, "\n\n")
+				#print("successful merge: \n", M, "\n\n")
 				break
 		
 		i += 1
 	# end "for all rows" while loop
+
+	for i in range(len(M)):
+		for j in range(len(M[0])):
+			if M[i][j] == 2:
+				M[i][j] = DONT_CARE
 	
 	return np.array(M)
 		
