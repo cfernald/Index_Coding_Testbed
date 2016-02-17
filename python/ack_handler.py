@@ -38,7 +38,7 @@ class AckListener:
                 msgId = int (data[1])
                 
                 # record the ack
-                self.acks[node][msgId] = 1
+                self.acks[node][msgId] = 2
 
             # Timeouts will happen, we dont need to do anything
             except socket.timeout:

@@ -26,12 +26,17 @@ if [ -f $PID_FILE ]; then
         echo "Removing orphanged pid file" >> $LOG_FILE
         rm $PID_FILE 
     else 
-        echo "Node already running. Exiting" >> $LOG_FILE
-        echo "Node already running on `hostname`"
-        exit 1
+        echo "Node already running. Restarting" >> $LOG_FILE
+        echo "Node already running on `hostname`, Restarting..."
+        kill -9 $pid > /dev/null 2>&1
+        if [ $?  -gt 0 ]; then
+            echo "Failed to restart node"
+            exit 1
+        fi
     fi
 fi
 
 python3 "$BASE/python/experiment_Node.py" $1 >> $LOG_FILE 2>&1 &
-echo "$!" > $PID_FILE
+pid=$!
+echo "$pid" > $PID_FILE
 

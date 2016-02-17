@@ -14,7 +14,7 @@ nodes = sys.argv[1].split()
 nodes = list(map(int, nodes))
 nodes.sort()
 PORT = 5000
-MY_IP = '127.0.0.1'
+MY_IP = '10.42.0.1'
 MSG_LEN = 100
 
 print("Starting experiment with nodes: ", nodes)
@@ -46,7 +46,7 @@ while (len(toSend) > 0):
     for message in toSend:
         broadcaster.send(message, PORT)
 
-    sleep(1)
+    sleep(0.005)
     toSend = algorithms.reduceMessages(msgs, acks.acks, "rr")
 
 acks.stop()
