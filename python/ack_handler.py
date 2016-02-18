@@ -11,10 +11,9 @@ class AckListener:
 
     def __init__(self, numNodes):
         # set up acks list
-        self.acks = [[0 for x in range(numNodes)] for x in range(numNodes)]
-        for i in range(len(self.acks)):
-            self.acks[i][i] = 1
-        
+        self.num_nodes = numNodes
+        self.reset()
+       
         # UDP socket setup
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("", ACK_PORT))
@@ -24,13 +23,19 @@ class AckListener:
         # Set running flag
         self.run = False
 
+    def reset(self):
+        self.acks = [[0 for x in range(self.num_nodes)] for x in range(self.num_nodes)]
+        for i in range(len(self.acks)):
+            self.acks[i][i] = 1
+        
+
     'This is intended to be run as a thread see the start method'
     def listen(self):
         while (self.run):
             ack = None 
             try:
                 ack = self.sock.recvfrom(ACK_BUFFER)
-                print("Got ack:", ack)
+                #print("Got ack:", ack)
                 data = ack[0]
                 
                 # break of the message into it's info
@@ -62,7 +67,7 @@ class AckSender:
         self.ip = ip
 
     def ack(self, myId, messageId):
-        print("sending ack for", myId, messageId)
+        #print("sending ack for", myId, messageId)
         msg = bytearray([myId, messageId])
         self.sock.sendto(msg, (self.ip, ACK_PORT))
 

@@ -8,6 +8,7 @@ import signal
 import sys
 import messages
 from time import sleep,time
+import matplotlib.pyplot as plt
 
 # Static Variables
 nodes = sys.argv[1].split()
@@ -16,6 +17,7 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 MSG_LEN = 100
+NUM_TESTS = 10
 
 print("Starting experiment with nodes: ", nodes)
 
@@ -38,16 +40,66 @@ broadcaster = udp.UdpBroadcaster(MY_IP)
 # generate messages
 msgs = messages.gen_messages(len(nodes), MSG_LEN)
 
-toSend = []
-for i in range(0, len(nodes)):
-    toSend.append(messages.format_msg([i], msgs[i]))
+# set up stats
+rounds = []
+round_time = []
+lost_msgs = []
+lost_by_owner_msgs = []
+avg_encode_time = []
+msgs_sent = []
 
-while (len(toSend) > 0):
-    for message in toSend:
-        broadcaster.send(message, PORT)
+for test in range(NUM_TESTS):
+    toSend = []
+    rnd = 0
+    lost = 0
+    lost_by_owner = 0
+    encodings = 0
+    encode_time = 0
+    sent = 0
+    round_start = time()
+    
+    for i in range(0, len(nodes)):
+        toSend.append(messages.format_msg([i], msgs[i]))
 
-    sleep(0.005)
-    toSend = algorithms.reduceMessages(msgs, acks.acks, "rr")
+    while (len(toSend) > 0):
+        rnd += 1
+        for message in toSend:
+            broadcaster.send(message, PORT)
+            sent += 1
+
+        sleep(0.025)
+        toSend = algorithms.reduceMessages(msgs, acks.acks, "rr")
+
+    round_stop = time()
+
+    sleep(1)
+    acks.reset()
+
+    rounds.append(rnd)
+    round_time.append((round_stop - round_start) * 1000)
+    lost_msgs.append(lost)
+    lost_by_owner_msgs.append(lost_by_owner)
+    msgs_sent.append(sent)
+    #avg_encode_time.append(encode_time/encodings)
 
 acks.stop()
+
+print("Rounds", rounds)
+print("Round Times", round_time)
+print("Msgs Lost", lost_msgs)
+print("Msgs Lost by Owner", lost_by_owner_msgs)
+
+plt.plot(round_time)
+plt.title("Test Time")
+plt.xlabel("Test number")
+plt.ylabel("Time (ms)")
+plt.savefig('test_time.png')
+
+plt.plot(msgs_sent)
+plt.title("Messages Sent")
+plt.xlabel("Test number")
+plt.ylabel("Number of messages")
+plt.savefig('messages_sent.png')
+
+print("Testing complete.")
 
