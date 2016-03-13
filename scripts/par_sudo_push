@@ -1,0 +1,8 @@
+#!/bin/bash
+
+
+for node in $nodes
+do
+    echo "Pushing \"$@\" to $node"
+    ssh -tt "blue@$node" $@
+done

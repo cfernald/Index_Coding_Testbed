@@ -6,7 +6,9 @@ type=802-11-wireless
 [802-11-wireless]
 ssid=blue
 mode=ap
-mac-address=00:08:CA:E7:75:25
+band=bg
+channel=11
+mac-address=54:e6:fc:95:6c:42
 
 [ipv6]
 method=auto
