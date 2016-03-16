@@ -9,13 +9,15 @@ class AppendEncoding:
 			self.encoding = self.encode(message)
 	
 	def __add__(self, other):
-	    return AppendEncoding(self.encoding + other.encoding, rawEncoding=True)
+		return AppendEncoding(self.encoding + other.encoding, rawEncoding=True)
 
 	def __sub__(self, other):
 		return AppendEncoding(self.encoding - other.encoding, rawEncoding=True)
 
 	def __mul__(self, other):
-        return AppendEncoding(self.encoding * other.encoding, rawEncoding=True) # indent?
+		if type(other) == int:
+			return AppendEncoding(self.encoding * other, rawEncoding=True)
+		return AppendEncoding(self.encoding * other.encoding, rawEncoding=True) # indent?
 	
 	def __eq__(self, other):
 		return self.encoding == other.encoding
@@ -37,7 +39,7 @@ class AppendEncoding:
 				numberified.append("0"+str(n))
 			else:
 				numberified.append(str(n))
-		return  long("".join(numberified))
+		return int("".join(numberified)) #in python3, int() behaves like long() from python2
 
 	def decode(self, m):
 		message = []

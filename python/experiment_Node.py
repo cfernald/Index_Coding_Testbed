@@ -1,4 +1,4 @@
-__author__ = 'ryan'
+__author__ = 'mostlychris'
 import socket, sys, messages
 from udp import *
 from ack_handler import *
