@@ -5,10 +5,10 @@ import time
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
 def gauss(A):
-    n = len(A) # rows
-    m = len(A[0]) # columns
+    num_rows = len(A) # rows
+    num_cols = len(A[0]) # columns
 
-    if n>m:
+    if num_rows>num_cols:
         print("more rows than columns, oh no")
         quit()
 
@@ -16,28 +16,28 @@ def gauss(A):
     #in a particular row of decodingSteps, the first entry represents the coefficient for the first encoded message,
     #the second entry for the second message, and so forth
     decodingSteps = []
-    for k in range(0, n):
-        decodingSteps.append([0]*n)
+    for k in range(0, num_rows):
+        decodingSteps.append([0]*num_rows)
         decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
 
-    # for each row i
-    for i in range(0, n):
+    # for each row i forwards
+    for i in range(0, num_rows):
         # Search for maximum in this column
         maxEl = abs(A[i][i])
         maxRow = i
-        for k in range(i+1, n):
+        for k in range(i+1, num_rows):
             if abs(A[k][i]) > maxEl:
                 maxEl = abs(A[k][i])
                 maxRow = k
 
         # Swap maximum row with current row (column by column)
-        for k in range(i, m): #upper bound was n+1 before? even assuming a square matrix, why +1?
+        for k in range(i, num_cols): #upper bound was n+1 before? even assuming a square matrix, why +1?
             tmp = A[maxRow][k]
             A[maxRow][k] = A[i][k]
             A[i][k] = tmp
 
         # swap the decodingSteps rows, too
-        for k in range(0,n):
+        for k in range(0,num_rows):
             tmp = decodingSteps[maxRow][k]
             decodingSteps[maxRow][k] = decodingSteps[i][k]
             decodingSteps[i][k] = tmp
@@ -48,29 +48,57 @@ def gauss(A):
 
         # Make all rows below this one 0 in current column
         curRowMult = A[i][i] # doesn't change for the rows below
-        for k in range(i+1, n):
+        for k in range(i+1, num_rows):
             pivotMult = A[k][i]
 
             # don't reduce this row if it is already reduced
             if pivotMult == 0:
                 continue
             # update all columns of the reduced row
-            for j in range(i, m):
+            for j in range(i, num_cols):
                 if i == j:
                     A[k][j] = 0
                 else:
                     A[k][j] = A[k][j]*curRowMult - A[i][j]*pivotMult
 
             # update all columns of the decodingSteps
-            for j in range(0, n):
+            for j in range(0, num_rows):
                 decodingSteps[k][j] = decodingSteps[k][j]*curRowMult  -  decodingSteps[i][j]*pivotMult
 
-        #print(A, "\n", decodingSteps, "\n\n")
+    # reducing on the way up is slightly different, because though we want to go row by row, we want to eliminate the last column, and since
+    # the matrix may not be square, we cannot use the same index variable for pivot row and column
+    pivotCol = num_cols-1 # initialize this to the index of the last column
+    savePivotCol = pivotCol # if we happen to have a 0 in pivotCol, keep searching to the left
+    # for each row i backwards. range(start index, stop boundary, step backwards)
+    for i in range(num_rows-1, -1, -1):
 
-    for i in range(n-1, -1, -1):
-        x[i] = A[i][n]/A[i][i]
-        for k in range(i-1, -1, -1):
-            A[k][n] -= A[k][i] * x[i]
+        # search to the left until we get
+        savePivotCol = pivotCol
+        while pivotCol >= 0 and A[i][pivotCol] == 0:
+            pivotCol -= 1
+        if pivotCol == 0:
+            pivotCol = savePivotCol-1
+            continue
+
+        # Make all rows above this one 0 in current column
+        curRowMult = A[i][pivotCol] # doesn't change for the rows above
+        for k in range(i-1,-1,-1):
+            pivotMult = A[k][pivotCol]
+
+            # don't reduce this row if it is already reduced
+            if pivotMult == 0:
+                continue
+            # update all columns of the row being reduced. Cannot rely on the upper triangular property to bound which columns are added
+            # since we are now reducing up the matrix. Columns don't need to be added backwards, but for conceptual continuity...
+            for j in range(pivotCol, -1, -1):
+                A[k][j] = A[k][j]*curRowMult - A[i][j]*pivotMult
+
+            # update all columns of the decodingSteps
+            for j in range(num_rows-1, -1, -1):
+                decodingSteps[k][j] = decodingSteps[k][j]*curRowMult - decodingSteps[i][j]*pivotMult
+
+        pivotCol = savePivotCol-1 # if we went left to find a non-zero entry, go back, and resume the normal up one left one progression
+
     return A, decodingSteps
 
 # this just works with int/long (need to adapt for data structure)
@@ -139,7 +167,7 @@ def decodeWithRR(coefs, encodedMessages):
         for eMsgNum, multBy in enumerate(steps[reducedRow]):
             message += encodedMessages[eMsgNum]*multBy
         # we got message to be a multiple of the intended message, now lets get the actual message
-        idToMessage[msg] = message / divideBy
+        idToMessage[msg] = message // divideBy
 
     return idToMessage
 
@@ -161,14 +189,22 @@ def sanityCheck():
 #A = [[11,20,30,40,50], [2,4,6,8,10], [1,2,3,4,5], [1,0,0,0,0]]
 #print(gauss(A))
 def sanityCheck2():
-    msg1 = AppendEncoding("Hello, I am message1! I'm excited about it!")
+    msg1 = AppendEncoding("Hello, I am message1! I'm chyah about it!")
     msg2 = AppendEncoding("Hello, I am message2! I'm ... okay about it")
-    msg3 = AppendEncoding("I can't be decoded")
+    msg3 = AppendEncoding("I am not used right now")
     combined1 = msg1*2 + msg2*3
     combined2 = msg1
     coefs = [[2,3,0],[0,1,0]] # combined is 2 of msg1 and 3 of msg2, and we'll send message 2 in order to recover both
     encodedMessages = [combined1.getEncoding(), msg2.getEncoding()]
-    print(AppendEncoding(decodeWithRR(coefs,encodedMessages)[1], True))
+    recoveredMessages = decodeWithRR(coefs,encodedMessages)
+    for key in recoveredMessages :
+        print(AppendEncoding(recoveredMessages[key], True))
+
+def sanityCheckRRUp():
+    A = [[1,2,3,4],[0,4,6,8], [0,0,2,1]]
+    reducedA, steps = gauss(A)
+    print(reducedA)
+    print(steps)
 
 def testMult():
     a = 12341239487398273498273409872123908743250983245982374598324509827345987234509872345987213312398712309187233498723498723049872349872340982734987234982734
@@ -182,18 +218,6 @@ def testMult():
     print("efficient mult: ", time.time()-start)
     assert(r1==r2)
 
-#sanityCheck2()
 
 
-gauss()
-
-
-'''
-# Solve equation Ax=b for an upper triangular matrix A
-x = [0 for i in range(n)]
-for i in range(n-1, -1, -1):
-    x[i] = A[i][n]/A[i][i]
-    for k in range(i-1, -1, -1):
-        A[k][n] -= A[k][i] * x[i]
-return x
-'''
+sanityCheck2()
