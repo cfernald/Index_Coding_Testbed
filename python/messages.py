@@ -1,5 +1,6 @@
 import random
 import algorithms
+import encoding, decoding
 from math import log
 
 def gen_messages(num, length):
@@ -47,6 +48,7 @@ def get_nodes(msg):
     num = msg[0]
     return list(map(int, msg[1:num + 1]))
 
+'This is passed a row from the processed matrix to generate that message'
 def combine_row(row, msgs):
     nodes = []
 
@@ -75,6 +77,7 @@ def combine(nodes, msgs):
         
     return format_msg(nodes, result.to_bytes(max_size + 1, byteorder='big'))
 
+# This needs to be updated for new encoding
 def extract(node, msg, side_info):
     nodes = get_nodes(msg)
     
