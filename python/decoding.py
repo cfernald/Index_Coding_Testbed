@@ -76,8 +76,8 @@ def gauss(A):
         savePivotCol = pivotCol
         while pivotCol >= 0 and A[i][pivotCol] == 0:
             pivotCol -= 1
-        if pivotCol == 0:
-            pivotCol = savePivotCol-1
+        if pivotCol < 0:
+            pivotCol = savePivotCol
             continue
 
         # Make all rows above this one 0 in current column
@@ -192,10 +192,11 @@ def sanityCheck2():
     msg1 = AppendEncoding("Hello, I am message1! I'm chyah about it!")
     msg2 = AppendEncoding("Hello, I am message2! I'm ... okay about it")
     msg3 = AppendEncoding("I am not used right now")
-    combined1 = msg1*2 + msg2*3
-    combined2 = msg1
-    coefs = [[2,3,0],[0,1,0]] # combined is 2 of msg1 and 3 of msg2, and we'll send message 2 in order to recover both
-    encodedMessages = [combined1.getEncoding(), msg2.getEncoding()]
+    combined1 = msg1 + msg2 + msg3
+    combined2 = msg2 + msg3
+    combined3 = msg2*2 + msg3*2
+    coefs = [[1,1,1],[0,1,1], [0,2,2]] # combined is 2 of msg1 and 3 of msg2, and we'll send message 2 in order to recover both
+    encodedMessages = [combined1.getEncoding(), combined2.getEncoding(), combined3.getEncoding()]
     recoveredMessages = decodeWithRR(coefs,encodedMessages)
     for key in recoveredMessages :
         print(AppendEncoding(recoveredMessages[key], True))
