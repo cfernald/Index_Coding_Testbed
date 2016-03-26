@@ -37,22 +37,25 @@ class DecodeManager:
                         
                         # We already have this msgId decoded, lets extract it
                         num_msgId = nodes[msgId]
-                        mult = self.sife_info[msgId][1]
+                        div = self.sife_info[msgId][1]
                         steps_msgId = self.side_info[msgId][0]
                         
                         # update the orig_msg matrix
                         for i in range(len(nodes)):
-                            nodes[i] *= mult
+                            nodes[i] *= div
+                        nodes[msgId] = 0
                         
                         # update the steps list
-                        for i in range(len()):
+                        for i in range(len(steps_msgId)):
+                            steps[i] = (steps[i] * mult) - (num_msgId * steps_msgId[i])
+       
+        # Check the coeffs again to see if it need to be added to the matrix
+        num_coeffs = 0
+        for node in nodes:
+            if node != 0:
+                num_coeffs += 1
 
-                        
-                            
-                        #TODO subtract out the steps * the coeffsicint of msgId
-                           
-                    
-            
+        if coeffs > 1:    
             # Add new coeffs row
             self.coeffs.append(nodes)
 
@@ -64,7 +67,7 @@ class DecodeManager:
             for i in range(len(nodes)):
                 if (nodes[i] != 0):
                     # add the elimination steps array as well as the coefficient of our single message data to be divided by at decode time
-                    self.side_info[i] = tuple([], nodes[i])
+                    self.side_info[i] = tuple(steps, nodes[i])
                         
       
         self.encoded.append(raw_msg)
