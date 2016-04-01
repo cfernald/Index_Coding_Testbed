@@ -1,33 +1,48 @@
 import random
 import time
+from math import log
 
-class AppendEncoding:
+class EncodedMessage:
 	def __init__(self, message, rawEncoding=False):
 		if rawEncoding:
 			self.encoding = message
 		else:
-			self.encoding = self.encode(message)
+			self.encoding = self.fromBytes(message)
 	
 	def __add__(self, other):
-		return AppendEncoding(self.encoding + other.encoding, rawEncoding=True)
+		return EncodedMessage(self.encoding + other.encoding, rawEncoding=True)
 
 	def __sub__(self, other):
-		return AppendEncoding(self.encoding - other.encoding, rawEncoding=True)
+		return EncodedMessage(self.encoding - other.encoding, rawEncoding=True)
 
 	def __mul__(self, other):
 		if type(other) == int:
-			return AppendEncoding(self.encoding * other, rawEncoding=True)
-		return AppendEncoding(self.encoding * other.encoding, rawEncoding=True) # indent?
+			return EncodedMessage(self.encoding * other, rawEncoding=True)
+		return EncodedMessage(self.encoding * other.encoding, rawEncoding=True) # indent?
 	
 	def __eq__(self, other):
 		return self.encoding == other.encoding
 
 	def __repr__(self):
-		return self.decode(self.encoding)
+		return self.toBytes()
+
+	def __str__(self):
+		return str(self.toBytes().decode('utf-8'))
 	
 	def getEncoding(self):
 		return self.encoding
 
+	def fromBytes(self, bytes):
+		# leading with a bytearray[1] to not chop off leading 0s
+		return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=False)
+
+	def toBytes(self):
+		num_bytes = int(log(self.encoding, 256)) + 1
+		return self.encoding.to_bytes(num_bytes, byteorder='big')[1:] # ignore the leading 1
+
+
+
+'''
 	def encode(self, m):
 		#start with a 1 to protect against opening characters less than 100 (like 06) have their opening 0s chopped off in long representation
 		numberified = ["1"]
@@ -52,6 +67,7 @@ class AppendEncoding:
 				message.append( chr( int("".join(charBuffer))) )
 				del charBuffer[:]
 		return "".join(message)
+		'''
 
 '''
 messageLength = 100

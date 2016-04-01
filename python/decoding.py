@@ -1,6 +1,6 @@
 __author__ = 'ryan'
 
-from encoding import AppendEncoding
+from encoding import EncodedMessage
 import time
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
@@ -189,17 +189,17 @@ def sanityCheck():
 #A = [[11,20,30,40,50], [2,4,6,8,10], [1,2,3,4,5], [1,0,0,0,0]]
 #print(gauss(A))
 def sanityCheck2():
-    msg1 = AppendEncoding("Hello, I am message1! I'm chyah about it!")
-    msg2 = AppendEncoding("Hello, I am message2! I'm ... okay about it")
-    msg3 = AppendEncoding("I am not used right now")
+    msg1 = EncodedMessage(bytearray("Hello, I am message1! I'm chyah about it!", 'ascii'))
+    msg2 = EncodedMessage(bytearray("Hello, I am message2! I'm ... okay about it", 'ascii'))
+    msg3 = EncodedMessage(bytearray("I am not used right now", 'ascii'))
     combined1 = msg1 + msg2 + msg3
     combined2 = msg2 + msg3
-    combined3 = msg2*2 + msg3*2
-    coefs = [[1,1,1],[0,1,1], [0,2,2]] # combined is 2 of msg1 and 3 of msg2, and we'll send message 2 in order to recover both
+    combined3 = msg3*2
+    coefs = [[1,1,1],[0,1,1], [0,0,2]] # combined is 2 of msg1 and 3 of msg2, and we'll send message 2 in order to recover both
     encodedMessages = [combined1.getEncoding(), combined2.getEncoding(), combined3.getEncoding()]
     recoveredMessages = decodeWithRR(coefs,encodedMessages)
     for key in recoveredMessages :
-        print(AppendEncoding(recoveredMessages[key], True))
+        print(str(EncodedMessage(recoveredMessages[key], True)))
 
 def sanityCheckRRUp():
     A = [[1,2,3,4],[0,4,6,8], [0,0,2,1]]
@@ -221,4 +221,4 @@ def testMult():
 
 
 
-sanityCheck2()
+#sanityCheck2()
