@@ -219,6 +219,11 @@ def testMult():
     print("efficient mult: ", time.time()-start)
     assert(r1==r2)
 
+'''
+A = [[1, 0, 1], [1, 1, 0], [0, 1, 1]]
+eye = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+print(gauss(A, eye))
+'''
 
 
 #sanityCheck2()

@@ -59,6 +59,7 @@ class DecodeManager:
             if canDecode:
                 rows_to_be_removed.append(i)
                 self.side_info[msgId] = (self.decoding_steps[i], div)
+                new_decoded.append(msgId)
 
         rows_to_be_removed.reverse()
         for row in rows_to_be_removed:
@@ -157,3 +158,4 @@ def test():
 
     print("Test passed")
 
+test()
