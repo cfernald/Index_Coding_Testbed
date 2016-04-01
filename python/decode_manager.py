@@ -14,6 +14,26 @@ class DecodeManager:
         self.side_info = {}
         self.encoded = []
 
+    
+    def decode_message(self, msgId):
+        if msgId not in self.side_info:
+            return None
+
+        steps = self.side_info[msgId][0]
+        div = self.side_info[msgId][1]
+
+        msg = encoding.EncodedMessage(0, rawEncoding=True)
+
+        for i in range(len(steps)):
+            if steps[i] != 0:
+                other = encoding.EncodedMessage(self.encoded[i])
+                msg = msg + (other * steps[i])
+
+        msg = msg / div
+
+        return msg.toBytes()
+
+
     def direct_decode(self, coeffs, steps):
         # decode what we can first
         for msgId in range(len(coeffs)):
@@ -152,10 +172,22 @@ def test():
     assert l == []
     l = dh.addMessage([0,1,1], b"sdaf")
     assert l == []
-    l = dh.addMessage([1,1,0], b"asdf")
-    print(sorted(l))
+    l = dh.addMessage([1,1,0], b"dfdasdf")
     assert sorted(l) == [0,1,2]
 
+    dh.reset()
+    m1 = encoding.EncodedMessage(b"Hello12345")
+    m2 = encoding.EncodedMessage(b"arghf12345")
+    m3 = m1 + m2
+    l = dh.addMessage([1,1,0], m3.toBytes())
+    l = dh.addMessage([1,0,0], m1.toBytes())
+
+    print (str(dh.decode_message(1))) 
+    print (str(dh.decode_message(0))) 
+
+    assert dh.decode_message(1) == m2.toBytes()
+    assert dh.decode_message(0) == m1.toBytes()
+    
     print("Test passed")
 
 test()

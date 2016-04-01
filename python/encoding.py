@@ -19,6 +19,14 @@ class EncodedMessage:
 		if type(other) == int:
 			return EncodedMessage(self.encoding * other, rawEncoding=True)
 		return EncodedMessage(self.encoding * other.encoding, rawEncoding=True) # indent?
+
+	def __div__(self, other):
+		return self.__truediv__(other)
+	
+	def __truediv__(self, other):
+		if type(other) == int:
+			return EncodedMessage(self.encoding // other, rawEncoding=True)
+		return EncodedMessage(self.encoding // other.encoding, rawEncoding=True)
 	
 	def __eq__(self, other):
 		return self.encoding == other.encoding
