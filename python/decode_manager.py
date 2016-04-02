@@ -147,6 +147,7 @@ class DecodeManager:
         return new_decoded
 
 def test():
+    # basic direct decode testing
     dh = DecodeManager(3)
     l = dh.addMessage([1,0,0],b"dfsdf")
     assert l == [0]
@@ -158,6 +159,7 @@ def test():
     assert len(dh.side_info) == 3
     assert len(dh.decoding_steps) == 0
 
+    # basic build matrix test
     dh.reset()
     l = dh.addMessage([1,1,1],b"asdf")
     assert l == []
@@ -167,6 +169,7 @@ def test():
     assert len(dh.side_info) == 0
     assert len(dh.decoding_steps) == 2
 
+    # Circular dependency test
     dh.reset()
     m0 = encoding.EncodedMessage(b"this is a test")
     m1 = encoding.EncodedMessage(b"This is also a test")
@@ -181,6 +184,17 @@ def test():
     assert dh.decode_message(1) == m1.toBytes()
     assert dh.decode_message(2) == m2.toBytes()
 
+    # non 1 values 
+    dh.reset()
+    mult0 = 3
+    mult1 = 4
+    dh.addMessage([mult0, mult1, 0], ((m0 * mult0) + (m1 * mult1)).toBytes())
+    dh.addMessage([1,0,0], m0.toBytes())
+    assert dh.decode_message(0) == m0.toBytes()
+    print(str(m1.toBytes()), str(dh.decode_message(1)))
+    assert dh.decode_message(1) == m1.toBytes()
+
+    # Same length test. Currently fails
     dh.reset()
     m1 = encoding.EncodedMessage(b"Hello12345")
     m2 = encoding.EncodedMessage(b"arghf12345")
