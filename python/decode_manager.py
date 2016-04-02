@@ -157,7 +157,7 @@ def test():
     assert len(dh.coeffs) == 0
     assert len(dh.side_info) == 3
     assert len(dh.decoding_steps) == 0
-    
+
     dh.reset()
     l = dh.addMessage([1,1,1],b"asdf")
     assert l == []
@@ -168,12 +168,18 @@ def test():
     assert len(dh.decoding_steps) == 2
 
     dh.reset()
-    l = dh.addMessage([1,0,1], b"sdf")
+    m0 = encoding.EncodedMessage(b"this is a test")
+    m1 = encoding.EncodedMessage(b"This is also a test")
+    m2 = encoding.EncodedMessage(b"this is a third test")
+    l = dh.addMessage([1,0,1], (m0 + m2).toBytes())
     assert l == []
-    l = dh.addMessage([0,1,1], b"sdaf")
+    l = dh.addMessage([0,1,1], (m1 + m2).toBytes())
     assert l == []
-    l = dh.addMessage([1,1,0], b"dfdasdf")
+    l = dh.addMessage([1,1,0], (m0 + m1).toBytes())
     assert sorted(l) == [0,1,2]
+    assert dh.decode_message(0) == m0.toBytes()
+    assert dh.decode_message(1) == m1.toBytes()
+    assert dh.decode_message(2) == m2.toBytes()
 
     dh.reset()
     m1 = encoding.EncodedMessage(b"Hello12345")
