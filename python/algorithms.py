@@ -10,18 +10,17 @@ import matplotlib.pyplot as plt
 
 DONT_CARE = -1
 
-def reduceMessages(msgs, acks, algo="rr"):
-    if (algo == "rr"):
-        return roundRobin(msgs, acks)
-
+def reduceMessages(msgs, acks, rid, algo="rr"):
     new_messages = []
     
     #print(acks)
+    if algo == "rr":
+        result = roundRobin(msgs, acks)
     if algo == "ldg":
         result = LDG(acks)
     
     for i in range(len(result)):
-        msg = messages.combine_row(result[i], msgs)
+        msg = messages.encode_row(result[i], msgs, rid)
         if msg != None:
             new_messages.append(msg)
 
@@ -30,14 +29,15 @@ def reduceMessages(msgs, acks, algo="rr"):
 
 def roundRobin(msgs, acks):
     'This method just identifies the the missing 1s along the diagnal'
-    
-    result = []
+    matrix = []
 
-    for i in range(0, len(msgs)):
-        if (acks[i][i] == 1):
-            result.append(messages.format_msg([i], msgs[i]))
+    for i in range(len(acks)):
+        if acks[i][i] == 1:
+            row = [0] * len(msgs)
+            row[i] = 1
+            matrix.append(row)
 
-    return result
+    return matrix
 
 
 # in M, 2s are considered *. Will return a set of vectors where 1 entries should be included

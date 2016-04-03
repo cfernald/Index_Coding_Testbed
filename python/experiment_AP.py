@@ -52,7 +52,6 @@ avg_encode_time = []
 msgs_sent = []
 
 for test in range(NUM_TESTS):
-    toSend = []
     rnd = 0
     lost = 0
     lost_by_owner = 0
@@ -61,8 +60,8 @@ for test in range(NUM_TESTS):
     sent = 0
     round_start = time()
     
-    for i in range(0, len(nodes)):
-        toSend.append(messages.format_msg([i], msgs[i]))
+    # first round is always round robin
+    toSend = algorithms.reduceMessages(msgs, acks.acks, rnd, "rr")
 
     while (len(toSend) > 0):
         rnd += 1
