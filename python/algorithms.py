@@ -117,7 +117,7 @@ def APRankReduce(targetRank, sideInfoMatrix, eig_size_tolerance):
 
     while currentRank>targetRank and projectionDistance>(eig_size_tolerance/(n**3)): #and CheckInf<n-currentRank+5: #, in matlab script
         iteration += 1
-        print iteration,"\n", M
+        print(iteration,"\n", M)
 
         U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
         currentRank = 0
@@ -187,8 +187,8 @@ def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds
         M = np.dot(U, np.dot(S,V))
         projectionDistance = np.linalg.norm(oldM-M, ord=2) #L2 norm
         if debug:
-            print "now rank reduced:\n", M
-            print "with rank:", np.linalg.matrix_rank(M)
+            print("now rank reduced:\n", M)
+            print("with rank:", np.linalg.matrix_rank(M))
             print(projectionDistance)
 
         oldM = M
@@ -208,9 +208,9 @@ def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds
             break
 
         if debug:
-            print "now side info corrected:\n", M
-            print "with rank:", currentRank
-            print "\n\n"
+            print("now side info corrected:\n", M)
+            print("with rank:", currentRank)
+            print("\n\n")
             raw_input()
 
     return M, currentRank, iteration
@@ -246,7 +246,7 @@ def testMatrix(size, probOfDontCare):
 def timeAP(targetRank, matrixSize=100):
     results = [] # will hold a bunch of tuples of runs of APIndexCode
     for probOfDontCare in np.arange(0, 1, 0.1):
-        print len(results)
+        print(len(results))
         percentDontCare, M = testMatrix(matrixSize, probOfDontCare)
         start = time.time()
         Mr, rank, iterations = APRankReduce2(M, targetRank, 0.001)
@@ -309,11 +309,11 @@ def testAPYah():
 #Mr, rank, steps = APRankReduce2(testMatrix(50, 0.5)[1], 30)
 n=  m = 50
 M = np.random.rand(20,20)
-print M
-print np.linalg.matrix_rank(M)
+print(M)
+print(np.linalg.matrix_rank(M))
 Mr = np.around(M , decimals=4)
-print np.linalg.matrix_rank(np.around(M, decimals=4))
-print Mr
+print(np.linalg.matrix_rank(np.around(M, decimals=4)))
+print(Mr)
 
 '''
 ax = plt.subplot(111)
