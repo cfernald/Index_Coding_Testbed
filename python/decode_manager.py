@@ -26,7 +26,7 @@ class DecodeManager:
 
         for i in range(len(steps)):
             if steps[i] != 0:
-                other = encoding.EncodedMessage(self.encoded[i])
+                other = encoding.EncodedMessage(self.encoded[i], addMarker=False)
                 msg = msg + (other * steps[i])
 
         msg = msg / div
@@ -174,11 +174,11 @@ def test():
     m0 = encoding.EncodedMessage(b"this is a test")
     m1 = encoding.EncodedMessage(b"This is also a test")
     m2 = encoding.EncodedMessage(b"this is a third test")
-    l = dh.addMessage([1,0,1], (m0 + m2).toBytes())
+    l = dh.addMessage([1,0,1], (m0 + m2).toBytes(removeMarker=False))
     assert l == []
-    l = dh.addMessage([0,1,1], (m1 + m2).toBytes())
+    l = dh.addMessage([0,1,1], (m1 + m2).toBytes(removeMarker=False))
     assert l == []
-    l = dh.addMessage([1,1,0], (m0 + m1).toBytes())
+    l = dh.addMessage([1,1,0], (m0 + m1).toBytes(removeMarker=False))
     assert sorted(l) == [0,1,2]
     assert dh.decode_message(0) == m0.toBytes()
     assert dh.decode_message(1) == m1.toBytes()
@@ -186,12 +186,11 @@ def test():
 
     # non 1 values 
     dh.reset()
-    mult0 = 3
-    mult1 = 4
-    dh.addMessage([mult0, mult1, 0], ((m0 * mult0) + (m1 * mult1)).toBytes())
-    dh.addMessage([1,0,0], m0.toBytes())
+    mult0 = 398745987435345
+    mult1 = 434534529485734
+    dh.addMessage([mult0, mult1, 0], ((m0 * mult0) + (m1 * mult1)).toBytes(removeMarker=False))
+    dh.addMessage([1,0,0], m0.toBytes(removeMarker=False))
     assert dh.decode_message(0) == m0.toBytes()
-    print(str(m1.toBytes()), str(dh.decode_message(1)))
     assert dh.decode_message(1) == m1.toBytes()
 
     # Same length test. Currently fails
@@ -199,12 +198,8 @@ def test():
     m1 = encoding.EncodedMessage(b"Hello12345")
     m2 = encoding.EncodedMessage(b"arghf12345")
     m3 = m1 + m2
-    l = dh.addMessage([1,1,0], m3.toBytes())
-    l = dh.addMessage([1,0,0], m1.toBytes())
-
-    print (str(dh.decode_message(1))) 
-    print (str(dh.decode_message(0))) 
-
+    l = dh.addMessage([1,1,0], m3.toBytes(removeMarker=False))
+    l = dh.addMessage([1,0,0], m1.toBytes(removeMarker=False))
     assert dh.decode_message(1) == m2.toBytes()
     assert dh.decode_message(0) == m1.toBytes()
     

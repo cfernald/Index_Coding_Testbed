@@ -3,11 +3,11 @@ import time
 from math import log
 
 class EncodedMessage:
-	def __init__(self, message, rawEncoding=False):
+	def __init__(self, message, rawEncoding=False, addMarker=True):
 		if rawEncoding:
 			self.encoding = message
 		else:
-			self.encoding = self.fromBytes(message)
+			self.encoding = self.fromBytes(message, addMarker)
 	
 	def __add__(self, other):
 		return EncodedMessage(self.encoding + other.encoding, rawEncoding=True)
@@ -40,14 +40,19 @@ class EncodedMessage:
 	def getEncoding(self):
 		return self.encoding
 
-	def fromBytes(self, bytes):
+	def fromBytes(self, bytes, addMarker = True):
 		# leading with a bytearray[1] to not chop off leading 0s
-		return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=False)
+		if addMarker:
+			return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=False)
+		else:
+			return int.from_bytes(bytearray(bytes), byteorder='big', signed=False)
 
-	def toBytes(self):
+	def toBytes(self, removeMarker = True):
 		num_bytes = int(log(self.encoding, 256)) + 1
-		return self.encoding.to_bytes(num_bytes, byteorder='big')[1:] # ignore the leading 1
-
+		if removeMarker:
+			return self.encoding.to_bytes(num_bytes, byteorder='big')[1:] # ignore the leading 1
+		else:
+			return self.encoding.to_bytes(num_bytes, byteorder='big')
 
 
 '''
