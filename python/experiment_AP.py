@@ -19,7 +19,7 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 MSG_LEN = 512
-NUM_TESTS = 10
+NUM_TESTS = 1
 
 print("Starting experiment with nodes: ", nodes)
 
@@ -52,6 +52,7 @@ avg_encode_time = []
 msgs_sent = []
 
 for test in range(NUM_TESTS):
+    print("Starting experiment", test)
     rnd = 0
     lost = 0
     lost_by_owner = 0
@@ -65,6 +66,7 @@ for test in range(NUM_TESTS):
 
     while (len(toSend) > 0):
         rnd += 1
+        rnd %= 255
 
         #if (rnd > 20):
         #    print("spiking with nodes", messages.get_nodes(toSend[0]))
@@ -78,7 +80,7 @@ for test in range(NUM_TESTS):
             if (acks.acks[i][i] == 1):
                 lost_by_owner += 1
 
-        toSend = algorithms.reduceMessages(msgs, acks.acks, "rr")
+        toSend = algorithms.reduceMessages(msgs, acks.acks, rnd, "rr")
 
     round_stop = time()
 

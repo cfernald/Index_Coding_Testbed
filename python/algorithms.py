@@ -1,10 +1,10 @@
 import numpy as np
 import math
-#import messages
+import messages
 import random
 import copy
 import time
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
@@ -217,8 +217,8 @@ def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds
 
 
 	
-test = np.array([[1, 2, 2, 0],[2, 1, 2, 0],[0, 2, 1, 2], [2, 0, 0, 1]])
-test2 = np.array([[1,2,2,2],[2,1,2,2],[2,2,1,2],[2,2,2,1]])
+#test = np.array([[1, 2, 2, 0],[2, 1, 2, 0],[0, 2, 1, 2], [2, 0, 0, 1]])
+#test2 = np.array([[1,2,2,2],[2,1,2,2],[2,2,1,2],[2,2,2,1]])
 
 #res = APRankReduce2(test2, 1, 0.0001)
 #print(res)
@@ -307,13 +307,13 @@ def testAPYah():
         plt.close(i)
 
 #Mr, rank, steps = APRankReduce2(testMatrix(50, 0.5)[1], 30)
-n=  m = 50
+'''n=  m = 50
 M = np.random.rand(20,20)
 print(M)
 print(np.linalg.matrix_rank(M))
 Mr = np.around(M , decimals=4)
 print(np.linalg.matrix_rank(np.around(M, decimals=4)))
-print(Mr)
+print(Mr)'''
 
 '''
 ax = plt.subplot(111)

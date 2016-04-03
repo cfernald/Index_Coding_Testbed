@@ -67,7 +67,8 @@ def encode_row(row, msgs, rid, coeff_size=1):
             msg = msg + (encoding.EncodedMessage(msgs[i]) * row[i])
     
     if header[1] > 0:
-        return bytearray(header) + msg.toBytes(removeMarker=False)
+        header = bytearray(header)
+        return header + msg.toBytes(removeMarker=False)
     else:
         return None       
 
