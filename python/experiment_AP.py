@@ -80,7 +80,7 @@ for test in range(NUM_TESTS):
             if (acks.acks[i][i] == 1):
                 lost_by_owner += 1
 
-        toSend = algorithms.reduceMessages(msgs, acks.acks, rnd, "rr")
+        toSend = algorithms.reduceMessages(msgs, acks.acks, rnd, "ldg")
 
     round_stop = time()
 
