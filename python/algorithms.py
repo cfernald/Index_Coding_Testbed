@@ -96,7 +96,7 @@ def LDG(sideInfoMatrix):
             if M[i][j] == 2:
                 M[i][j] = DONT_CARE
 
-    return np.array(M)
+    return np.array(M).toList()
 
 
 def APRankReduce(targetRank, sideInfoMatrix, eig_size_tolerance):
