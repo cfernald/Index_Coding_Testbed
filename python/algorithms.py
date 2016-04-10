@@ -10,7 +10,7 @@ import time
 
 DONT_CARE = -1
 
-def reduceMessages(msgs, acks, rid, algo="rr"):
+def reduceMessages(msgs, acks, tid, algo="rr"):
     new_messages = []
     
     #print(acks)
@@ -20,7 +20,7 @@ def reduceMessages(msgs, acks, rid, algo="rr"):
         result = LDG(acks)
 
     for i in range(len(result)):
-        msg = messages.encode_row(result[i], msgs, rid)
+        msg = messages.encode_row(result[i], msgs, tid)
         if msg != None:
             new_messages.append(msg)
 
@@ -102,7 +102,7 @@ def LDG(sideInfoMatrix):
             if M[i][j] == 2:
                 M[i][j] = DONT_CARE
 
-    return np.array(M)
+    return np.array(M).tolist()
 
 
 def APRankReduce(targetRank, sideInfoMatrix, eig_size_tolerance):

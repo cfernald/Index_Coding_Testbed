@@ -8,6 +8,7 @@ NUM_ARGS=1
 USAGE="Usage: start {xml-test-file} "
 USERS="blue"
 UPDATE=1
+FIND_NODES=0
 
 if [ $# -ne $NUM_ARGS ]; then
     echo $USAGE
@@ -20,9 +21,11 @@ mkdir $LOG_DIR
 LOG_FILE="$LOG_DIR/test.log"
 
 # lets explore the network and see what is connected
-echo "finding nodes..."
-source scripts/get_hosts
-echo "Found nodes: $nodes"
+if [ $FIND_NODES -gt 0 ]; then
+    echo "finding nodes..."
+    source scripts/get_hosts
+    echo "Found nodes: $nodes"
+fi
 
 # lets push the code to the nodes
 if [ $UPDATE -gt 0 ]; then
@@ -49,7 +52,7 @@ for node in $nodes; do
     #ids="$ids$id "
 
     # Start the nodes
-    echo "Starting node-$id as node: $node_num $num_nodes" | tee $LOG_FILE
+    echo "Starting node-$id as node: $node_num $num_nodes" #| tee $LOG_FILE
 
     # Assign the node a test number and start the node
     ssh "$USERS@$node" "./research/364d-udp/node_start $node_num $num_nodes"
@@ -65,11 +68,12 @@ echo "nodes started: $ids" | tee $LOG_FILE
 
 echo "Starting experiment."
 python3 python/experiment_AP.py "$ids" "$LOG_DIR" #| tee $LOG_FILE
-echo "Done."
+echo "Python testing completed"
 
-echo "Grabbing log files..."
+echo "Shuttinf down and grabbing log files..."
 for node in $nodes; do
-    sftp -b /home/blue/logs/*.log "blue@" <<EOF
+    ssh "$USERS@$node" "./research/364d-udp/node_stop"
+    rsync -v "blue@$node:/home/blue/logs/*.log" $LOG_DIR
 done
 echo "Done"
 

@@ -28,7 +28,7 @@ def gen_data(seed, length):
     return bytearray(data)
 
 
-def get_round(msg):
+def get_test(msg):
     return msg[0]
 
 
@@ -54,13 +54,13 @@ def get_coeffs(msg, num_nodes, coeff_size=1):
 
 
 'This is passed a row from the processed matrix to generate that message'
-def encode_row(row, msgs, rid, coeff_size=1):
-    header = [rid, 0]
+def encode_row(row, msgs, tid, coeff_size=1):
+    header = [tid, 0]
     msg = encoding.EncodedMessage(0, rawEncoding=True)
     
     for i in range(len(row)):    
         # for now, nothings are ignored
-        if row[i] != algorithms.DONT_CARE:
+        if row[i] != 0 and row[i] != algorithms.DONT_CARE:
             header[1] += 1
             header.append(i)
             header.extend(row[i].to_bytes(coeff_size, byteorder='big', signed=True))
