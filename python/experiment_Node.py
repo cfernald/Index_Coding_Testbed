@@ -32,6 +32,10 @@ while True:
 
     new_decoded = decoder.addMessage(coeffs, data)
 
+    # make sure the AP knows we can decode
+    if coeffs[me] != 0 and decoder.can_decode(me):
+        new_decoded.append(me)
+
     for decoded in new_decoded:
         ack_sender.ack(me, decoded)
 

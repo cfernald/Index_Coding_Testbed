@@ -19,11 +19,13 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 MSG_LEN = 512
-NUM_TESTS = 5
+NUM_TESTS = 100
 CLEAN_DATA = True
 CLEAN_FACTOR = 3
+ENCODE_ALGO = "ldg"
 
-print("Starting experiment with nodes: ", nodes)
+
+print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGO)
 
 # setup the ack listener
 acks = ack_handler.AckListener(len(nodes))
@@ -64,7 +66,7 @@ for test in range(NUM_TESTS):
     test_start = time()
     
     # first round is always round robin
-    toSend = algorithms.reduceMessages(msgs, acks.acks, test, "ldg")
+    toSend = algorithms.reduceMessages(msgs, acks.acks, test, ENCODE_ALGO)
 
     while (len(toSend) > 0):
         rnd += 1

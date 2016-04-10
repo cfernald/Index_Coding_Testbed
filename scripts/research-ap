@@ -8,7 +8,7 @@ ssid=blue
 mode=ap
 band=bg
 channel=11
-mac-address=54:e6:fc:95:6c:42
+mac-address=00:08:ca:e7:75:25
 
 [ipv6]
 method=auto

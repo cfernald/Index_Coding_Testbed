@@ -67,7 +67,7 @@ done
 echo "nodes started: $ids" | tee $LOG_FILE
 
 echo "Starting experiment."
-python3 python/experiment_AP.py "$ids" "$LOG_DIR" | tee $LOG_FILE
+python3 python/experiment_AP.py "$ids" "$LOG_DIR" #| tee $LOG_FILE
 echo "Python testing completed"
 
 echo "Shuttinf down and grabbing log files..."

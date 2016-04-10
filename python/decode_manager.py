@@ -15,6 +15,13 @@ class DecodeManager:
         self.encoded = []
 
     
+    def can_decode(self, msgId):
+        if msgId in self.side_info:
+            return True
+        else:
+            return False
+
+    
     def decode_message(self, msgId):
         if msgId not in self.side_info:
             return None
