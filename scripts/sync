@@ -5,5 +5,5 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-rsync -avz --delete --exclude .git/ --exclude 364d-udp/logs/ --exclude 364d-udp/python/__pycache__/ --exclude *.swp --exclude *.pyc  ~/research/ blue@"$1":/home/blue/research
+rsync -avz --delete --exclude .git/ --exclude 364d-udp/logs/ --exclude 364d-udp/python/__pycache__/ --exclude *.swp --exclude *.pyc --exclude experiments/ ~/research/ blue@"$1":/home/blue/research
 
