@@ -18,7 +18,7 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
         result = roundRobin(msgs, acks)
     if algo == "ldg":
         result = LDG(acks)
-    
+
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
         if msg != None:
@@ -45,6 +45,8 @@ def LDG(sideInfoMatrix):
     M =copy.deepcopy(sideInfoMatrix) # this shallow copies and mangles the original matrix (change to copy.deepcopy() if you want to retain sideInfoMatrix)
     i = 0
     numNodes = len(M[0])
+
+
     while i < len(M): # while we haven't gone through every row (the number of rows changes as we reduce, which is why this is not a for loop)
         rowIndices_available = set(x for x in range(len(M)) if x!=i)
         thisRow = M[i]
@@ -73,6 +75,7 @@ def LDG(sideInfoMatrix):
                         raw_input("error \n")
                         raise BaseException("debug: somehow two 1s were merged?")
                     mergedRow.append(0)
+                    didAMerge = True
                 # a 1 and a don't care
                 elif thisRow[j]+rowToMerge[j] == 3:
                     mergedRow.append(1)
@@ -88,7 +91,10 @@ def LDG(sideInfoMatrix):
                 #print("successful merge: \n", M, "\n\n")
                 break
 
-        i += 1
+        if len(mergedRow) == numNodes:
+            i = 0
+        else:
+            i += 1
     # end "for all rows" while loop
 
     for i in range(len(M)):
@@ -150,7 +156,22 @@ def APRankReduce(targetRank, sideInfoMatrix, eig_size_tolerance):
 
     return M
 
+# 'D' being the region where the matrix has non-zeros on the diagonal, 0s from side info set properly
+def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
+    n = len(sideInfoMatrix)
+    m = len(sideInfoMatrix[0])
 
+    for i in range(n):
+        for j in range(m):
+            # if we need to include it and it's been zeroed out
+            if sideInfoMatrix[i,j] == 1 and abs(M[i,j]) < zeroThreshold:
+                M[i,j] = 1 # might set this to the average of the column, or something
+            elif sideInfoMatrix[i,j] == 0:
+                M[i,j] = 0
+            elif roundPrecision != None:
+                M[i,j] = round(M[i,j], roundPrecision)
+
+    return M
 
 def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
     debug = True
@@ -196,8 +217,8 @@ def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds
         # now project back to the set of matrices where all that changed was the don't cares
         for i in range(n):
             for j in range(m):
-                if sideInfoMatrix[i,j] == 1:
-                    M[i,j] = 1
+                if sideInfoMatrix[i,j] == 1 and abs(M[i,j]) < eig_size_tolerance:
+                    M[i,j] = 1 # might set this to the average of 
                 elif sideInfoMatrix[i,j] == 0:
                     M[i,j] = 0
                 #else:
@@ -214,9 +235,63 @@ def APRankReduce2(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds
             raw_input()
 
     return M, currentRank, iteration
+'''
+def dirAP(sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
+    M = startMatrix; # AP start point (in region D)
+    iteration = 0
+    n = len(sideInfoMatrix)
+    if n==0:
+        raise ValueError("sideInfoMatrix is empty!")
+    if targetRank > n:
+        raise ValueError("targetRank is uselessly high!")
+    m = len(sideInfoMatrix[0])
+    projectionDistance = 100000 # initalized to a large value
+    currentRank = n
+    M = projectToD(M, sideInfoMatrix)
+    OutM=M
+    tmpN=zeros(1,60);
+    while (Rnk>r && DisM>tol/n^3):
+        iteration += 1 # Iteration Number
+
+        # Projection on region C
+        eigenvalues, eigenvectors = np.linalg.eig(M);
+        eigenvalues = map(lambda x : x if x>0 else 0, eigenvalues) #only positive or 0 eigenvalues (positive semi definite)
+        [~,order] = sort(eigenvalues);  # Sort eigenvalues in ascending order
+        eigM=np.diag(eigenvalues); # Eigenvalues of M as diagonal matrix
 
 
-	
+        D(:,order(1:n-r))=0;
+        M=V*D*V'; % First piont (in region C)
+        OutM=M; % This M maybe the optimal solution
+        % Projection on region D
+        M(ZeroIndex)=0;
+        M(OneIndex)=1;
+        Rnk=rank(M,tol); % Current optimal Index Code Length
+        % Directional Projection
+        M2=M;  % Second piont (in region D)
+        [V,D]=eig(M); % Eigenvalue decomposition
+        eigM=diag(D); % Eigenvalues of M
+        eigM(eigM<0)=0; % Only want positive semi-definite matrix
+        [~,order] = sort(eigM);  # Sort eigenvalues in ascending order
+        D(:,order(1:n-r))=0;
+        M=V*D*V';  % Third piont (in region C)
+        DisM=norm(OutM-M);
+        NormF=norm(OutM-M2,'fro'); % Frobenius distance of first piont and second piont
+        M=OutM+NormF^2/trace((OutM-M)'*(OutM-M2))*(M-OutM); % Fourth piont
+        % Check stopping criteria every 60 iterations
+        NumN=mod(Ite-1,60)+1;
+        tmpN(NumN)=NormF;
+        if NumN==60
+        ENormF=sum(tmpN)/60; % Average Frobenius distance in 60 interations
+        if Ite>60 && (tmpF<ENormF+tol/n)
+            break;
+
+        tmpF=ENormF;
+
+    % Projection on region D
+    M(ZeroIndex)=0;
+    M(OneIndex)=1;
+'''
 #test = np.array([[1, 2, 2, 0],[2, 1, 2, 0],[0, 2, 1, 2], [2, 0, 0, 1]])
 #test2 = np.array([[1,2,2,2],[2,1,2,2],[2,2,1,2],[2,2,2,1]])
 
@@ -305,6 +380,14 @@ def testAPYah():
         plt.title("Target Rank {}".format(r))
         fig.savefig("Small Reals/{}.png".format(r))
         plt.close(i)
+
+def testLDG():
+	for i in range(0,100,10):
+		percentDontCare, M = testMatrix(10, i/100.0)
+		print np.linalg.matrix_rank(M), "\n\n"
+		print np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n"
+		raw_input()
+
 
 #Mr, rank, steps = APRankReduce2(testMatrix(50, 0.5)[1], 30)
 '''n=  m = 50
