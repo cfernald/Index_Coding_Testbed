@@ -18,6 +18,7 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
         result = roundRobin(msgs, acks)
     if algo == "ldg":
         result = LDG(acks)
+        #print(acks, "\n\n", result, "\n\n\n")
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
@@ -384,8 +385,8 @@ def testAPYah():
 def testLDG():
 	for i in range(0,100,10):
 		percentDontCare, M = testMatrix(10, i/100.0)
-		print np.linalg.matrix_rank(M), "\n\n"
-		print np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n"
+		print (np.linalg.matrix_rank(M), "\n\n")
+		print (np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n")
 		raw_input()
 
 

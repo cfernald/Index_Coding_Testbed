@@ -20,7 +20,7 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 MSG_LEN = 512
-NUM_TESTS = 5
+NUM_TESTS = 50
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
 ENCODE_ALGOS = ["rr", "ldg"]
@@ -92,9 +92,10 @@ for test in range(NUM_TESTS):
 
             for message in toSend:
                 broadcaster.send(message, PORT)
+                sleep(0.01)
                 sent += 1
 
-            sleep(0.5)
+            sleep(0.25)
             for i in range(len(nodes)):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
