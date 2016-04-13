@@ -13,7 +13,13 @@ fi
 LOG_FILE="$LOGS/`hostname`.log"
 PID_FILE="$LOGS/node.pid"
 
-echo "Starting node with parameters: $@" > $LOG_FILE
+if [ -f $LOG_FILE ]; then
+    rm $LOG_FILE
+fi
+
+touch $LOG_FILE
+
+echo "Starting node with parameters: $@" >> $LOG_FILE
 
 if [ -f $PID_FILE ]; then
     

@@ -2,10 +2,11 @@ import numpy as np
 import math
 import messages
 import random
+import decoding
 import copy
 import time
 import sys
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
@@ -14,17 +15,21 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
     new_messages = []
     
     #print(acks)
-    if algo == "rr":
-        result = roundRobin(msgs, acks)
-    elif algo == "ldg":
-        result = LDG(acks)
-        #print(acks, "\n\n", result, "\n\n\n")
-    elif algo == "svdap":
-        rank = np.linalg.rank(acks)
-        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)
-        result = gauss(result)[0]
+
+    if any(1 in sublist for sublist in acks):
+        if algo == "rr":
+            result = roundRobin(msgs, acks)
+        elif algo == "ldg":
+            result = LDG(acks)
+        elif algo == "svdap":
+            rank = np.linalg.matrix_rank(acks)
+            result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)[0]
+            result = decoding.gauss(result)[0]
+        else:
+            print("ERROR: Unknown encoding algorithm")
+            assert False
     else:
-        assert False
+        result=[]
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
@@ -179,7 +184,7 @@ def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
     return M
 
 def SVDAP(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
-    debug = True
+    debug = False
 
     iteration = 0
     n = len(sideInfoMatrix)
@@ -219,16 +224,8 @@ def SVDAP(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resu
 
         oldM = M
 
-        # now project back to the set of matrices where all that changed was the don't cares
-        for i in range(n):
-            for j in range(m):
-                if sideInfoMatrix[i,j] == 1 and abs(M[i,j]) < eig_size_tolerance:
-                    M[i,j] = 1 # might set this to the average of 
-                elif sideInfoMatrix[i,j] == 0:
-                    M[i,j] = 0
-                #else:
-                #    M[i,j] = round(M[i,j],0)
-                # else, leave the calculated matrix be. Changing these values makes it possible for M to not be the original rank, yes?
+        M = projectToD(M, sideInfoMatrix)
+
         currentRank = np.linalg.matrix_rank(M)
         if time.time() - beginTime > maxTimeSeconds:
             break
@@ -446,7 +443,7 @@ def testLDGExpansion():
         #print np.linalg.matrix_rank(reducedM), "\n"
         #print np.linalg.matrix_rank(expandedM), "\n\n---------\n\n"
 
-testAPYah()
+#testAPYah()
 #testLDGExpansion()
 # (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,
 #print dirAP(testMatrix(50,0.5)[1],  30)
