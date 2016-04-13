@@ -23,7 +23,7 @@ MSG_LEN = 15000
 NUM_TESTS = 50
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
-ENCODE_ALGOS = ["rr", "ldg"]
+ENCODE_ALGOS = ["svdap"]
 
 
 print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGOS)
@@ -178,9 +178,6 @@ for algo_index in range(num_algos):
 
 print("******************************")
 print("Creating graph...")
-
-
-
 
 colors = ['r', 'g', 'b']
 plt.figure(1)

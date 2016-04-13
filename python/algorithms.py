@@ -16,12 +16,15 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
     #print(acks)
     if algo == "rr":
         result = roundRobin(msgs, acks)
-    if algo == "ldg":
+    elif algo == "ldg":
         result = LDG(acks)
         #print(acks, "\n\n", result, "\n\n\n")
-    if algo == "svdap":
+    elif algo == "svdap":
         rank = np.linalg.rank(acks)
-        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance, 
+        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)
+        result = gauss(result)[0]
+    else:
+        assert False
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
