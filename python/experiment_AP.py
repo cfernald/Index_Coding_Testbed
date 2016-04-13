@@ -19,7 +19,7 @@ nodes = list(map(int, nodes))
 nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
-MSG_LEN = 512
+MSG_LEN = 15000
 NUM_TESTS = 50
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
