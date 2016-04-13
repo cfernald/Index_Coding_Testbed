@@ -20,7 +20,7 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 MSG_LEN = 512
-NUM_TESTS = 25
+NUM_TESTS = 50
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
 ENCODE_ALGOS = ["rr", "ldg"]
@@ -81,7 +81,8 @@ for test in range(NUM_TESTS):
         rank_diff = 0
     
         # first round is always round robin
-        toSend = algorithms.reduceMessages(msgs, acks.acks, test, algo="rr")
+        tid = ((test * num_algos) + algo_index) % 128
+        toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo="rr")
 
         while (len(toSend) > 0):
             rnd += 1
@@ -91,15 +92,16 @@ for test in range(NUM_TESTS):
 
             for message in toSend:
                 broadcaster.send(message, PORT)
+                sleep(0.01)
                 sent += 1
 
-            sleep(0.5)
+            sleep(0.25)
             for i in range(len(nodes)):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
             
             base_line = algorithms.reduceMessages(msgs, acks.acks, 0, algo="rr")
-            toSend = algorithms.reduceMessages(msgs, acks.acks, (test * num_algos + algo_index) % 255, algo=algo)
+            toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
 
             rank_diff += len(base_line) - len(toSend) 
 
