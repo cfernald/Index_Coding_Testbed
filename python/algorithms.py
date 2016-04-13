@@ -21,7 +21,7 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
         #print(acks, "\n\n", result, "\n\n\n")
     if algo == "svdap":
         rank = np.linalg.rank(acks)
-        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance, 
+        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
@@ -49,7 +49,6 @@ def LDG(sideInfoMatrix):
     M =copy.deepcopy(sideInfoMatrix) # this shallow copies and mangles the original matrix (change to copy.deepcopy() if you want to retain sideInfoMatrix)
     i = 0
     numNodes = len(M[0])
-
 
     while i < len(M): # while we haven't gone through every row (the number of rows changes as we reduce, which is why this is not a for loop)
         rowIndices_available = set(x for x in range(len(M)) if x!=i)
@@ -425,8 +424,8 @@ def expandLDG(M, sideInfoMatrix):
 def testLDG():
 	for i in range(0,100,10):
 		percentDontCare, M = sampleSideInfo(10, i/100.0)
-		print np.linalg.matrix_rank(M), "\n\n"
-		print np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n"
+		print (np.linalg.matrix_rank(M), "\n\n")
+		print (np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n")
 		print (np.linalg.matrix_rank(M), "\n\n")
 		print (np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n")
 		raw_input()
@@ -436,9 +435,9 @@ def testLDGExpansion():
         percentDontCare, M = sampleSideInfo(5, i/100.0)
         reducedM = LDG(M)
         expandedM = expandLDG(reducedM, M)
-        print M, "\n\n"
-        print np.array(reducedM), "\n\n"
-        print np.array(expandedM), "\n\n---------\n\n"
+        print(M, "\n\n")
+        print (np.array(reducedM), "\n\n")
+        print (np.array(expandedM), "\n\n---------\n\n")
 
         #print np.linalg.matrix_rank(M), "\n\n"
         #print np.linalg.matrix_rank(reducedM), "\n"
