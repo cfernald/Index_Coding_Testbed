@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
 DONT_CARE = -42
-def reduceMessages(msgs, acks, tid, algo="rr"):
+def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=0.00001):
     new_messages = []
     
     #print(acks)
@@ -19,6 +19,9 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
     if algo == "ldg":
         result = LDG(acks)
         #print(acks, "\n\n", result, "\n\n\n")
+    if algo == "svdap":
+        rank = np.linalg.rank(acks)
+        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance, 
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
