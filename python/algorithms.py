@@ -187,7 +187,7 @@ def SVDAP(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resu
     currentRank = n
 
     CheckInf = 0
-    M = np.random.rand(10, size=(n,m)) # 999999999999999999
+    M = np.random.rand(n,m)*9999999999 # 999999999999999999
     #M = np.ones(shape=(n,m))
     #M = np.diag(np.ones(n))
     #M = np.random.rand(n,m)
@@ -234,7 +234,7 @@ def SVDAP(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resu
             print("\n\n")
             raw_input()
 
-    return M, currentRank, iteration
+    return (M*(10**resultPrecisionDecimals)).astype(int).tolist(), currentRank, iteration
 
 def dirAP(sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
     def eigenRankReduce(M, targetRank):
@@ -441,6 +441,7 @@ def testLDGExpansion():
         #print np.linalg.matrix_rank(reducedM), "\n"
         #print np.linalg.matrix_rank(expandedM), "\n\n---------\n\n"
 
+testAPYah()
 #testLDGExpansion()
 # (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,
 #print dirAP(testMatrix(50,0.5)[1],  30)
