@@ -6,7 +6,6 @@ import decoding
 import copy
 import time
 import sys
-#import matplotlib.pyplot as plt
 
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
@@ -164,7 +163,6 @@ def APRankReduce_old(targetRank, sideInfoMatrix, eig_size_tolerance):
                 else:
                     M[i,j] = round(M[i,j],0)
                 # else, leave the calculated matrix be. Changing these values makes it possible for M to not be the original rank, yes?
-
     return M
 
 # 'D' being the region where the matrix has non-zeros on the diagonal, 0s from side info set properly
@@ -183,91 +181,114 @@ def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
                 M[i][j] = round(M[i][j], roundPrecision)
     return M
 
-def SVDAP(sideInfoMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
+
+def thresholdRank(M, eig_size_tolerance=0.0001):
+    U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
+    rank = 0
+    for val in s:
+        if abs(val) > eig_size_tolerance: rank += 1
+    return rank
+    #return np.linalg.matrix_rank(M)
+
+def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
     debug = False
 
-    iteration = 0
-    n = len(sideInfoMatrix)
+    # initialization
+    m = len(sideInfoMatrix[0]) # columns
+    n = len(sideInfoMatrix) # rows
     if n==0:
         raise ValueError("sideInfoMatrix is empty!")
     if targetRank > n:
         raise ValueError("targetRank is uselessly high!")
-    m = len(sideInfoMatrix[0])
-    projectionDistance = 100000 # initalized to a large value
-    currentRank = n
 
-    CheckInf = 0
-    M = np.random.rand(n,m)*9999999999 # 999999999999999999
-    #M = np.ones(shape=(n,m))
-    #M = np.diag(np.ones(n))
-    #M = np.random.rand(n,m)
-    oldM = M
+    if startingMatrix is None:
+        startingMatrix = np.random.rand(n,m)*9999999999 # randomly distributed large numbers
+    oldM = M = startingMatrix # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
+    projectionDistance = sys.maxint # initalized to a large value
+    currentRank = thresholdRank(M, eig_size_tolerance)
+    bestRank = currentRank
+    bestM = M # if somehow we got to a lower rank in the projection process, we don't want to throw it out in the next projection
+    bestIteration = iteration = 0
 
-    beginTime = time.time()
-    while currentRank>targetRank and projectionDistance>(eig_size_tolerance/(n**3)): #and CheckInf<n-currentRank+5: #, in matlab script
+    while currentRank > targetRank and projectionDistance > eig_size_tolerance/(n**3) and iteration < max_iterations: #and CheckInf<n-currentRank+5: #, in matlab script
         iteration += 1
         U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
-        #for val in s:
-        #    if val>eig_size_tolerance: currentRank += 1
-        #print "rank ^", currentRank, "\n\n"
         S = np.diag(s)
         S[targetRank:, :] = 0 # killing all but targetRank many dimensions (projection onto the set of matrices with <=targetRank)
-        CheckInf = S[0][0] #in matlab script
+        #CheckInf = S[0][0] #in matlab script
 
-
-        M = np.dot(U, np.dot(S,V))
+        M = np.dot(U, np.dot(S,V)) # reconstruct with low rank
         projectionDistance = np.linalg.norm(oldM-M, ord=2) #L2 norm
         if debug:
             print("now rank reduced:\n", M)
             print("with rank:", np.linalg.matrix_rank(M))
             print(projectionDistance)
 
+        M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=None)
+
+
         oldM = M
-
-        M = projectToD(M, sideInfoMatrix)
-
-        currentRank = np.linalg.matrix_rank(M)
-        if time.time() - beginTime > maxTimeSeconds:
-            break
+        currentRank = thresholdRank(M, eig_size_tolerance)
+        if currentRank < bestRank:
+            bestM = M
+            bestRank = currentRank
+            bestIteration = iteration
 
         if debug:
             print("now side info corrected:\n", M)
             print("with rank:", currentRank)
             print("\n\n")
-            raw_input()
+            input()
 
-    return (M*(10**resultPrecisionDecimals)).astype(int).tolist(), currentRank, iteration
 
-def dirAP(sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance, maxTimeSeconds=2, resultPrecisionDecimals=4):
+    if return_analysis:
+        M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
+        bestM = (bestM*(10**resultPrecisionDecimals)).astype(int)
+        return [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
+    else:
+        if bestRank < currentRank:
+            M = bestM
+        M = projectToD(M,sideInfoMatrix,roundPrecision=resultPrecisionDecimals)
+        M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
+        return M
+
+def dirAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
+    # a helper function to project to region C
     def eigenRankReduce(M, targetRank):
         eigenvalues, eigenvectors = np.linalg.eig(M)
+        #eigenvalues = eigenvalues.real
+        #eigenvectors = eigenvectors.real
         eigenvalues = map(lambda x : x if x>0 else 0, eigenvalues) #only positive or 0 eigenvalues (positive semi definite)
         eigenStuff = [eigenPair for eigenPair in zip(eigenvalues, eigenvectors)] # attaching each eigenvalue to it's eigenvector
-        eigenStuff.sort(reverse=True)  # Sort eigenpairs in ascending order according to value of eigenvector
+        eigenStuff.sort(reverse=True, key=lambda x : x[0])  # Sort eigenpairs in ascending order according to value of eigenvector
         # overwrite the variables with the sorted stuff
         for i in range(len(eigenStuff)):
-            eigenvalues = eigenStuff[i][0]
-            eigenvectors = eigenStuff[i][1]
-        eigenvalues[targetRank:] = 0 # kill the least significant eigenvector directions
+            eigenvalues[i] = eigenStuff[i][0]
+            eigenvectors[i] = eigenStuff[i][1]
+        for i in range(len(eigenvalues)-targetRank):
+            eigenvalues[targetRank+i] = 0 # kill the least significant eigenvector directions
         eigM = np.diag(eigenvalues) # Eigenvalues of M as diagonal matrix
-        return np.dot(eigenvectors, np.dot(eigM, np.transpose(eigenvectors)) ) # First point in region C
+        return np.dot(eigenvectors, np.dot(eigM, np.transpose(eigenvectors)) )
 
-    M = startMatrix; # AP start point (in region D)
-    iteration = 0
-    n = len(sideInfoMatrix)
+    # initialization
+    m = len(sideInfoMatrix[0]) # columns
+    n = len(sideInfoMatrix) # rows
     if n==0:
         raise ValueError("sideInfoMatrix is empty!")
     if targetRank > n:
         raise ValueError("targetRank is uselessly high!")
-    m = len(sideInfoMatrix[0])
-    projectionDistance = sys.maxint # initalized to a large value
-    currentRank = n
-    M = projectToD(M, sideInfoMatrix)
-    OutM=M
-    tmpN=np.zeros(1,60)
+
+    tmpN=[0]*60
     previousFDistanceAvg = sys.maxint # initialized to a large value
-    while(currentRank>targetRank and projectionDistance>eig_size_tolerance/n^3):
-        iteration += 1 # Iteration Number
+    projectionDistance = sys.maxint # initalized to a large value
+    if startingMatrix is None:
+        startingMatrix = np.random.rand(n,m)*9999 # randomly distributed large numbers
+    M = outM = bestM = startingMatrix # AP start point
+    currentRank = bestRank = thresholdRank(M, eig_size_tolerance)
+    iteration = bestIteration = 0
+
+    while(currentRank > targetRank and projectionDistance > eig_size_tolerance/n**3 and iteration < max_iterations):
+        iteration += 1
 
         # Projection on region C
         M = eigenRankReduce(M, targetRank)
@@ -276,6 +297,10 @@ def dirAP(sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance, maxTimeSec
         M = projectToD(M, sideInfoMatrix)
         OutM = M # This M maybe the optimal solution
         currentRank=np.linalg.matrix_rank(M) # Current optimal Index Code Length
+        if currentRank < bestRank:
+            bestM = M
+            bestRank = currentRank
+            bestIteration = iteration
 
         # Directional Projection
         M2 = M  # Second point (in region D)
@@ -283,116 +308,41 @@ def dirAP(sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance, maxTimeSec
 
         projectionDistance = np.linalg.norm(OutM-M, 2) # numpy does Frobenius norm by default, while matlab does l2
         NormF = np.linalg.norm(OutM-M2,'fro') # Frobenius distance of first and second points
-        M=OutM+NormF**2 / np.trace(np.transpose(OutM-M) *(OutM-M2))*(M-OutM) # Fourth point
+        # unpacked matlab: M=OutM+NormF^2/trace((OutM-M)'*(OutM-M2))*(M-OutM);
+        numerator = (OutM)
+        temp1 = (NormF**2)/np.trace(np.transpose(OutM-M) *(OutM-M2)) #scalar
+        if temp1 == temp1: # if temp1 is a number (not NaN)
+            temp2 = temp1*(M-OutM) # back to matrix
+            M = OutM + temp2 # Fourth point
+
 
         # Check stopping criteria every 60 iterations
-        NumN=(iteration-1 % 60) + 1
-        tmpN[NumN]=NormF
-        if NumN==60:
+        NumN =iteration % 60
+        tmpN[NumN] = NormF
+        if NumN == 60:
             ENormF=sum(tmpN)/60 # Average Frobenius distance in 60 interations
-            if iteration>60 and (previousFDistanceAvg<ENormF+eig_size_tolerance/n):
+            if (iteration>60 and (previousFDistanceAvg<ENormF+eig_size_tolerance/n)):
                 break
-
             previousFDistanceAvg=ENormF
 
-    # Projection on region D
-    return projectToD(M, sideInfoMatrix)
+    if bestRank < currentRank:
+        outM = bestM
+        currentRank = bestRank
+        iteration = bestIteration
+    outM = projectToD(M,sideInfoMatrix,roundPrecision=resultPrecisionDecimals)
+    outM = (outM*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
 
-#test = np.array([[1, 2, 2, 0],[2, 1, 2, 0],[0, 2, 1, 2], [2, 0, 0, 1]])
-#test2 = np.array([[1,2,2,2],[2,1,2,2],[2,2,1,2],[2,2,2,1]])
-
-#res = APRankReduce2(test2, 1, 0.0001)
-#print(res)
-#print "with rank ", np.linalg.matrix_rank(res)
-
-
-def sampleSideInfo(size, probOfDontCare):
-
-    M = np.diag(np.ones(size))
-    nonDiagEntries = 0.0
-    dontCares = 0.0
-    for i in range(size):
-        for j in range(size):
-            if i==j:
-                continue # don't want to set the diagonals
-            nonDiagEntries += 1
-            if random.random() < probOfDontCare:
-                M[i][j] = 2
-                dontCares += 1
-
-    # percentage of don't care entries, the matrix
-    return (dontCares/nonDiagEntries, M)
-
-# a square matrixSize x matrixSize
-def timeAP(targetRank, matrixSize=100):
-    results = [] # will hold a bunch of tuples of runs of APIndexCode
-    for probOfDontCare in np.arange(0, 1, 0.1):
-        print(len(results))
-        percentDontCare, M = sampleSideInfo(matrixSize, probOfDontCare)
-        start = time.time()
-        Mr, rank, iterations = SVDAP(M, targetRank, 0.001)
-        runTime = time.time() - start
-        results.append((percentDontCare, rank, iterations, runTime))
-
-    return results
-
-
-results = []
-def recurseAP(M, targetRank, step):
-    start = time.time()
-    Mr, rank, iterations = SVDAP(M, targetRank, 0.001, maxTimeSeconds=2)
-    runTime = time.time() - start
-    results.append((rank,iterations, runTime))
-    if rank > targetRank + 3:
-        return
-    percentageAchieved = 1-(rank - targetRank)/float(step)
-    if percentageAchieved > 1:
-        return
-    recurseAP(Mr, step*percentageAchieved, step*2)
-
-
-def testAPYah():
-    #timeAP(100)
-    #recurseAP(testMatrix(100,0.3)[1], 90, 10)
-    SVDAP(sampleSideInfo(100,0.3)[1], 30, 0.001)
-
-    timingResults = {}
-    for targetRank in range(5,96, 10):
-        timingResults[targetRank] = timeAP(targetRank)
-
-    xAxis = [x for x in np.arange(0, 1, 0.1)]
-    width = 0.03
-    for i, r in enumerate(timingResults):
-        percentDontCare = []
-        rank = []
-        iterations = []
-        runTime =[]
-        for result in timingResults[r]:
-            percentDontCare.append(result[0])
-            rank.append(result[1])
-            iterations.append(result[2])
-            runTime.append(result[3])
-        iterationsAxis = [x+width for x in percentDontCare]
-        runTimeAxis = [x+(width*2) for x in percentDontCare]
-
-        fig = plt.figure(i)
-        rank_bars = plt.bar(percentDontCare, rank, width, color='blue', align='center')
-        iter_bars = plt.bar(iterationsAxis, iterations, width, color='red', align='center')
-        #time_bars = ax.bar(runTimeAxis, runTime, width, color='green')
-        plt.legend((rank_bars[0],iter_bars[0]), ('Rank','Iterations'))
-        plt.autoscale(tight=True)
-        plt.xlabel("Percentage of side info graph DC")
-        plt.yticks(np.arange(0,200,10))
-        plt.title("Target Rank {}".format(r))
-        fig.savefig("Small Reals/{}.png".format(r))
-        plt.close(i)
+    if return_analysis:
+        return outM, currentRank, iteration
+    else:
+        return outM
 
 # take a matrix and add additional rows (to equal the number of columns), keeping the rank as low as possible (greedily)
 def expandLDG(M, sideInfoMatrix):
     def percentNonZero(row):
         if row is None:
             return 0
-        return sum(1.0 for e in row if e==DONT_CARE) / len(row)
+        return sum(1.0 for e in row if e== DONT_CARE) / len(row)
 
     n = len(M) # rows
     m = len(M[0]) # cols
@@ -420,55 +370,4 @@ def expandLDG(M, sideInfoMatrix):
                 expandedSideInfo[i][i] = 1
 
     return expandedSideInfo
-
-def testLDG():
-	for i in range(0,100,10):
-		percentDontCare, M = sampleSideInfo(10, i/100.0)
-		print (np.linalg.matrix_rank(M), "\n\n")
-		print (np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n")
-		print (np.linalg.matrix_rank(M), "\n\n")
-		print (np.linalg.matrix_rank(LDG(M)), "\n\n---------\n\n")
-		raw_input()
-
-def testLDGExpansion():
-    for i in range(0,100,10):
-        percentDontCare, M = sampleSideInfo(5, i/100.0)
-        reducedM = LDG(M)
-        expandedM = expandLDG(reducedM, M)
-        print(M, "\n\n")
-        print (np.array(reducedM), "\n\n")
-        print (np.array(expandedM), "\n\n---------\n\n")
-
-        #print np.linalg.matrix_rank(M), "\n\n"
-        #print np.linalg.matrix_rank(reducedM), "\n"
-        #print np.linalg.matrix_rank(expandedM), "\n\n---------\n\n"
-
-#testAPYah()
-#testLDGExpansion()
-# (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,
-#print dirAP(testMatrix(50,0.5)[1],  30)
-#Mr, rank, steps = APRankReduce2(testMatrix(50, 0.5)[1], 30)
-'''n=  m = 50
-M = np.random.rand(20,20)
-print(M)
-print(np.linalg.matrix_rank(M))
-Mr = np.around(M , decimals=4)
-print(np.linalg.matrix_rank(np.around(M, decimals=4)))
-print(Mr)'''
-
-'''
-ax = plt.subplot(111)
-w = 0.3
-ax.bar(x-w, y,width=w,color='b',align='center')
-ax.bar(x, z,width=w,color='g',align='center')
-ax.bar(x+w, k,width=w,color='r',align='center')
-ax.xaxis_date()
-ax.autoscale(tight=True)
-
-plt.show()
-
-
-'''
-
-
 
