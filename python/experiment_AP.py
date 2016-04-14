@@ -100,10 +100,15 @@ for test in range(NUM_TESTS):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
             
-            base_line = algorithms.reduceMessages(msgs, acks.acks, 0, algo="rr")
+            # calculate the rank RR would produce
+            base_rank = 0
+            for i in range(len(acks.acks)):
+                if acks.acks[i] == 1:
+                    base_rank += 1
+
             toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
 
-            rank_diff += len(base_line) - len(toSend)
+            rank_diff += base_rank - len(toSend)
 
         test_stop = time()
 
@@ -123,17 +128,15 @@ for test in range(NUM_TESTS):
 
 acks.stop()
 
-print(tests)
-
 for algo_index in range(num_algos):
 
     algo = ENCODE_ALGOS[algo_index]
     print("******************************")
-    print("ENCODE ALGORITHM", algo)
+    print("ENCODE ALGORITHM:", algo)
 
     if CLEAN_DATA:
         time_avg = sum(test_time)/len(test_time)
-        print("Cleaning data...")
+        #print("Cleaning data...")
         i = 0
         removed = 0
         while (i < len(test_time)):
@@ -179,7 +182,7 @@ for algo_index in range(num_algos):
 print("******************************")
 print("Creating graph...")
 
-colors = ['r', 'g', 'b']
+colors = ['red', 'green', 'blue', 'black', 'yellow']
 plt.figure(1)
 for algo_index in range(num_algos):
     plt.plot(tests[algo_index], msgs_sent[algo_index], colors[algo_index], label=ENCODE_ALGOS[algo_index])
