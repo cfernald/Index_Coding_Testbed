@@ -2,6 +2,7 @@ import numpy as np
 import math
 import messages
 import random
+import decoding
 import copy
 import time
 import sys
@@ -13,14 +14,21 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
     new_messages = []
     
     #print(acks)
-    if algo == "rr":
-        result = roundRobin(msgs, acks)
-    if algo == "ldg":
-        result = LDG(acks)
-        #print(acks, "\n\n", result, "\n\n\n")
-    if algo == "svdap":
-        rank = np.linalg.rank(acks)
-        result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)
+
+    if any(1 in sublist for sublist in acks):
+        if algo == "rr":
+            result = roundRobin(msgs, acks)
+        elif algo == "ldg":
+            result = LDG(acks)
+        elif algo == "svdap":
+            rank = np.linalg.matrix_rank(acks)
+            result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)[0]
+            result = decoding.gauss(result)[0]
+        else:
+            print("ERROR: Unknown encoding algorithm")
+            assert False
+    else:
+        result=[]
 
     for i in range(len(result)):
         msg = messages.encode_row(result[i], msgs, tid)
@@ -173,6 +181,7 @@ def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
                 M[i][j] = round(M[i][j], roundPrecision)
     return M
 
+
 def thresholdRank(M, eig_size_tolerance=0.0001):
     U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
     rank = 0
@@ -216,6 +225,7 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
             print(projectionDistance)
 
         M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=None)
+
 
         oldM = M
         currentRank = thresholdRank(M, eig_size_tolerance)
@@ -360,3 +370,4 @@ def expandLDG(M, sideInfoMatrix):
                 expandedSideInfo[i][i] = 1
 
     return expandedSideInfo
+

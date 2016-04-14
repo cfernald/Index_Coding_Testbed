@@ -32,12 +32,12 @@ def get_test(msg):
     return msg[0]
 
 
-def get_data(msg, coeff_size=1):
+def get_data(msg, coeff_size=50):
     num = msg[1]
     return msg[2 + num + (num * coeff_size):]
 
 
-def get_coeffs(msg, num_nodes, coeff_size=1):
+def get_coeffs(msg, num_nodes, coeff_size=50):
     num = msg[1]
     coeffs = [0] * num_nodes
     
@@ -54,15 +54,21 @@ def get_coeffs(msg, num_nodes, coeff_size=1):
 
 
 'This is passed a row from the processed matrix to generate that message'
-def encode_row(row, msgs, tid, coeff_size=1):
+def encode_row(row, msgs, tid, coeff_size=50):
     header = [tid, 0]
     msg = encoding.EncodedMessage(0, rawEncoding=True)
-    
+    mod_factor = ((2**(coeff_size * 8)) / 2) - 1;
+
     for i in range(len(row)):    
         # for now, nothings are ignored
         if row[i] != 0 and row[i] != algorithms.DONT_CARE:
             header[1] += 1
             header.append(i)
+            
+            if row[i] >= mod_factor:
+                row[i] = row[i] % mod_factor
+                print("WARNING: We went outside of our encoding range. messanges.py:encode_row)")
+
             header.extend(row[i].to_bytes(coeff_size, byteorder='big', signed=True))
             msg = msg + (encoding.EncodedMessage(msgs[i]) * row[i])
     

@@ -52,7 +52,7 @@ for node in $nodes; do
     #ids="$ids$id "
 
     # Start the nodes
-    echo "Starting node-$id as node: $node_num $num_nodes" #| tee $LOG_FILE
+    echo "Starting node-$id as node: $node_num" #| tee $LOG_FILE
 
     # Assign the node a test number and start the node
     ssh "$USERS@$node" "./research/364d-udp/node_start $node_num $num_nodes"

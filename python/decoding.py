@@ -4,7 +4,7 @@ from encoding import EncodedMessage
 import time
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
-def gauss(A, decodingSteps):
+def gauss(A, decodingSteps=None):
     num_rows = len(A) # rows
     num_cols = len(A[0]) # columns
 
@@ -15,11 +15,13 @@ def gauss(A, decodingSteps):
     #deoodingSteps will store the linear combination of the encoded messages needed to get to the state of a row of A
     #in a particular row of decodingSteps, the first entry represents the coefficient for the first encoded message,
     #the second entry for the second message, and so forth
-    '''decodingSteps = []
-    for k in range(0, num_rows):
-        decodingSteps.append([0]*num_rows)
-        decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
-'''
+    
+    if decodingSteps == None:
+        decodingSteps = []
+        for k in range(0, num_rows):
+            decodingSteps.append([0]*num_rows)
+            decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
+
     # for each row i forwards
     for i in range(0, num_rows):
         # Search for maximum in this column
