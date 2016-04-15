@@ -19,8 +19,8 @@ nodes = list(map(int, nodes))
 nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
-MSG_LEN = 100
-NUM_TESTS = 5
+MSG_LEN = 50000
+NUM_TESTS = 25
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
 ENCODE_ALGOS = ["svdap"]
@@ -109,6 +109,8 @@ for test in range(NUM_TESTS):
             toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
 
             rank_diff += base_rank - len(toSend)
+            if rank_diff < 0:
+                print("WARNING: Sending out too many messages. RR:", base_rank,algo,len(toSend))
 
         test_stop = time()
 

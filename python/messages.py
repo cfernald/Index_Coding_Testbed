@@ -63,7 +63,7 @@ def get_coeffs(msg, num_nodes, coeff_size=DEFAULT_COEFF_SIZE):
 def encode_row(row, msgs, tid, coeff_size=DEFAULT_COEFF_SIZE):
     header = [tid, 0]
     msg = encoding.EncodedMessage(0, rawEncoding=True)
-    mod_factor = ((2**(coeff_size * 8)) / 2) - 1;
+    mod_factor = ((2**(coeff_size * 8)) // 2) - 1;
 
     for i in range(len(row)):    
         # for now, nothings are ignored
@@ -71,9 +71,12 @@ def encode_row(row, msgs, tid, coeff_size=DEFAULT_COEFF_SIZE):
             header[COUNT_INDEX] += 1
             header.append(i)
             
-            if row[i] >= mod_factor:
+            if abs(row[i]) >= mod_factor:
+                negative = row[i] < 0
+                print("WARNING: We went outside of our encoding range. coeff:", row[i])
                 row[i] = row[i] % mod_factor
-                print("WARNING: We went outside of our encoding range. messanges.py:encode_row)")
+                if negative:
+                    row[i] *= -1
 
             header.extend(row[i].to_bytes(coeff_size, byteorder='big', signed=True))
             msg = msg + (encoding.EncodedMessage(msgs[i]) * row[i])

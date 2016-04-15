@@ -48,11 +48,11 @@ class EncodedMessage:
 			return int.from_bytes(bytearray(bytes), byteorder='big', signed=False)
 
 	def toBytes(self, removeMarker = True):
-		num_bytes = int(log(self.encoding, 256)) + 1
+		num_bytes = int(log(abs(self.encoding), 256)) + 2
 		if removeMarker:
-			return self.encoding.to_bytes(num_bytes, byteorder='big')[1:] # ignore the leading 1
+			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)[1:] # ignore the leading 1
 		else:
-			return self.encoding.to_bytes(num_bytes, byteorder='big')
+			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
 
 
 '''
