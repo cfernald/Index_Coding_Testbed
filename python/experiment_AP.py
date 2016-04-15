@@ -19,11 +19,11 @@ nodes = list(map(int, nodes))
 nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
-MSG_LEN = 40000
-NUM_TESTS = 50
+MSG_LEN = 100
+NUM_TESTS = 5
 CLEAN_DATA = False
 CLEAN_FACTOR = 3
-ENCODE_ALGOS = ["rr", "ldg"]
+ENCODE_ALGOS = ["svdap"]
 
 
 print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGOS)
@@ -103,7 +103,7 @@ for test in range(NUM_TESTS):
             # calculate the rank RR would produce
             base_rank = 0
             for i in range(len(acks.acks)):
-                if acks.acks[i] == 1:
+                if acks.acks[i][i] == 1:
                     base_rank += 1
 
             toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)

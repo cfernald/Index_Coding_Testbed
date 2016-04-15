@@ -44,8 +44,8 @@ def get_data(msg, coeff_size=DEFAULT_COEFF_SIZE):
 
 
 def get_coeffs(msg, num_nodes, coeff_size=DEFAULT_COEFF_SIZE):
-    num = msg[COUNT_INDEX
-    coeffs = [TEST_INDEX] * num_nodes
+    num = msg[COUNT_INDEX]
+    coeffs = [0] * num_nodes
     
     for i in range(num):
         id_index = COEFFS_INDEX + i + (i * coeff_size)

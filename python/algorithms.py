@@ -204,7 +204,7 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
     if startingMatrix is None:
         startingMatrix = np.random.rand(n,m)*9999999999 # randomly distributed large numbers
     oldM = M = startingMatrix # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
-    projectionDistance = sys.maxint # initalized to a large value
+    projectionDistance = 9999999999 # initalized to a large value
     currentRank = thresholdRank(M, eig_size_tolerance)
     bestRank = currentRank
     bestM = M # if somehow we got to a lower rank in the projection process, we don't want to throw it out in the next projection
