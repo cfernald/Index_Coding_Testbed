@@ -73,7 +73,7 @@ def encode_row(row, msgs, tid, coeff_size=DEFAULT_COEFF_SIZE):
             
             if abs(row[i]) >= mod_factor:
                 negative = row[i] < 0
-                print("WARNING: We went outside of our encoding range. coeff:", row[i])
+                #print("WARNING: We went outside of our encoding range. coeff:", row[i])
                 row[i] = row[i] % mod_factor
                 if negative:
                     row[i] *= -1

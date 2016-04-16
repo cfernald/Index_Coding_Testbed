@@ -27,6 +27,7 @@ while True:
 
     if (tid != last_tid):
         print("New test... Reseting.")
+        sys.stdout.flush()
         decoder.reset()
         last_tid = tid
 

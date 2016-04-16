@@ -17,15 +17,28 @@ nodes = sys.argv[1].split()
 log_dir = sys.argv[2]
 nodes = list(map(int, nodes))
 nodes.sort()
+
+# Networking
 PORT = 5000
 MY_IP = '10.42.0.1'
-MSG_LEN = 50000
-NUM_TESTS = 25
-CLEAN_DATA = False
+# Dataset
+MSG_LEN = 100
+NUM_TESTS = 5
+# Data cleaning 
+CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
-ENCODE_ALGOS = ["svdap"]
+# Timeouts
+ROUNDS_TIMEOUT = 75
+# Aglorithms used 
+# "rr" = Round Robin
+# "ldg" = least difference geedy
+# "svdap" = SVD Alternating Projection)
+ENCODE_ALGOS = ["rr", "ldg", "svdap"]
+# Sleep times
+SLEEP_BROADCASTS = 0.01
+SLEEP_TESTS = 1.0
 
-
+# Code for expriments starts here
 print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGOS)
 
 # setup the ack listener
@@ -35,16 +48,17 @@ acks = ack_handler.AckListener(len(nodes))
 def signal_handler(signal, frame):
     print("\nShutting down...\n")
     acks.stop()
+    sys.stdout.flush()
     sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
 # start ack listener
 acks.start()
 
-# initial round
+# Setup the udp broadcaster
 broadcaster = udp.UdpBroadcaster(MY_IP)
 
-# generate messages
+# generate messages, 1 per nodes right now
 msgs = messages.gen_messages(len(nodes), MSG_LEN)
 
 # set up stats
@@ -71,6 +85,7 @@ for test in range(NUM_TESTS):
     for algo_index in range(num_algos):
         algo = ENCODE_ALGOS[algo_index]
         print("Starting experiment", test, algo)
+        sys.stdout.flush()
         rnd = 0
         lost = 0
         lost_by_owner = 0
@@ -83,8 +98,9 @@ for test in range(NUM_TESTS):
         # first round is always round robin
         tid = ((test * num_algos) + algo_index) % 128
         toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo="rr")
+        failed = False
 
-        while (len(toSend) > 0):
+        while (len(toSend) > 0 and not failed):
             rnd += 1
 
             #if (rnd > 20):
@@ -92,7 +108,7 @@ for test in range(NUM_TESTS):
 
             for message in toSend:
                 broadcaster.send(message, PORT)
-                sleep(0.01)
+                sleep(SLEEP_BROADCASTS)
                 sent += 1
 
             sleep(0.25)
@@ -111,22 +127,27 @@ for test in range(NUM_TESTS):
             rank_diff += base_rank - len(toSend)
             if rank_diff < 0:
                 print("WARNING: Sending out too many messages. RR:", base_rank,algo,len(toSend))
+            if rnd > ROUNDS_TIMEOUT:
+                failed = True
 
         test_stop = time()
 
         print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds")
 
-        sleep(1)
+        sleep(SLEEP_TESTS)
         acks.reset()
 
-        msgs_saved[algo_index].append(rank_diff)
-        tests[algo_index].append(test)
-        rounds[algo_index].append(rnd)
-        test_time[algo_index].append((test_stop - test_start) * 1000)
-        lost_msgs[algo_index].append(lost)
-        lost_by_owner_msgs[algo_index].append(lost_by_owner)
-        msgs_sent[algo_index].append(sent)
-        #avg_encode_time[algo_index].append(encode_time/encodings)
+        if not failed:
+            msgs_saved[algo_index].append(rank_diff)
+            tests[algo_index].append(test)
+            rounds[algo_index].append(rnd)
+            test_time[algo_index].append((test_stop - test_start) * 1000)
+            lost_msgs[algo_index].append(lost)
+            lost_by_owner_msgs[algo_index].append(lost_by_owner)
+            msgs_sent[algo_index].append(sent)
+            #avg_encode_time[algo_index].append(encode_time/encodings)
+        else:
+            print("Experiment timed out")
 
 acks.stop()
 
@@ -202,4 +223,5 @@ pickleInfo = {"Rounds":rounds, "Algos":ENCODE_ALGOS, "Test Times":test_time, "Ms
 pickle.dump(pickleInfo, open("{}/results.pkl".format(log_dir),"wb"))
 
 print("Testing complete.")
+sys.stdout.flush()
 
