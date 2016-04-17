@@ -10,6 +10,7 @@ import messages
 from time import sleep,time
 import matplotlib.pyplot as plt
 import pickle
+import statistics
 from copy import deepcopy
 
 # Static Variables
@@ -22,13 +23,13 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 100
-NUM_TESTS = 5
+MSG_LEN = 50000
+NUM_TESTS = 50
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
 # Timeouts
-ROUNDS_TIMEOUT = 75
+ROUNDS_TIMEOUT = 100
 # Aglorithms used 
 # "rr" = Round Robin
 # "ldg" = least difference geedy
@@ -71,6 +72,8 @@ lost_by_owner_msgs = []
 encode_time = []
 msgs_sent = []
 msgs_saved = []
+msg_correlations = []
+loss_avg = []
 for algo_index in range(num_algos):
     tests.append([])
     rounds.append([])
@@ -80,6 +83,8 @@ for algo_index in range(num_algos):
     encode_time.append([])
     msgs_sent.append([])
     msgs_saved.append([])
+    msg_correlations.append([])
+    loss_avg.append([])
 
 for test in range(NUM_TESTS):
     for algo_index in range(num_algos):
@@ -94,6 +99,8 @@ for test in range(NUM_TESTS):
         sent = 0
         test_start = time()
         rank_diff = 0
+        msg_correlation = 0
+        loss = 0
     
         # first round is always round robin
         tid = ((test * num_algos) + algo_index) % 128
@@ -115,6 +122,24 @@ for test in range(NUM_TESTS):
             for i in range(len(nodes)):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
+
+            # calculate loss data
+            if rnd == 1:
+                received = deepcopy(acks.acks)
+                for i in range(len(received)):
+                    for j in range(len(received)):
+                        if received[i][j] == 2:
+                            received[i][j] = 1
+                        else:
+                            received[i][j] = 0
+
+                col_avgs = []
+                for i in range(len(nodes)):
+                   col_avgs.append(sum(received[i][j] for j in range(len(received))) / len(received))
+                
+                loss = 1 - sum(col_avgs)/len(col_avgs)
+                msg_correlation = statistics.variance(col_avgs)
+
             
             # calculate the rank RR would produce
             base_rank = 0
@@ -145,6 +170,8 @@ for test in range(NUM_TESTS):
             lost_msgs[algo_index].append(lost)
             lost_by_owner_msgs[algo_index].append(lost_by_owner)
             msgs_sent[algo_index].append(sent)
+            msg_correlations[algo_index].append(msg_correlation)
+            loss_avg[algo_index].append(loss)
             #avg_encode_time[algo_index].append(encode_time/encodings)
         else:
             print("Experiment timed out")
@@ -186,6 +213,8 @@ for algo_index in range(num_algos):
     print("Avg Msgs Sent", (sum(msgs_sent[algo_index])/len(msgs_sent[algo_index])))
     print("Avg Lost by Owner", (sum(lost_by_owner_msgs[algo_index])/len(lost_by_owner_msgs[algo_index])))
     print("Avg messages saved", (sum(msgs_saved[algo_index])/len(msgs_saved[algo_index])))
+    print("Avg loss probability", (sum(loss_avg[algo_index])/len(loss_avg[algo_index])))
+    print("Avg message loss correlation", (sum(msg_correlations[algo_index])/len(msg_correlations[algo_index])))
 
 
     plt.plot(test_time[algo_index])
