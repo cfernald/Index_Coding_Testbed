@@ -177,7 +177,7 @@ def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
                 M[i][j] = 1 # might set this to the average of the column, or something
             elif sideInfoMatrix[i][j] == 0:
                 M[i][j] = 0
-            elif roundPrecision != None:
+            elif roundPrecision is not None:
                 M[i][j] = round(M[i][j], roundPrecision)
     return M
 
@@ -188,9 +188,9 @@ def thresholdRank(M, eig_size_tolerance=0.0001):
     for val in s:
         if abs(val) > eig_size_tolerance: rank += 1
     return rank
-    #return np.linalg.matrix_rank(M)
+    #versus #return np.linalg.matrix_rank(M)
 
-def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
+def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
     debug = False
 
     # initialization
@@ -202,10 +202,10 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
         raise ValueError("targetRank is uselessly high!")
 
     if startingMatrix is None:
-        startingMatrix = np.random.rand(n,m)*9999999999 # randomly distributed large numbers
+        startingMatrix = np.random.rand(n,m)*startSize # randomly distributed large numbers
     oldM = M = startingMatrix # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
-    projectionDistance = sys.maxint # initalized to a large value
-    currentRank = thresholdRank(M, eig_size_tolerance)
+    projectionDistance = 999999999999999 # initalized to a large value
+    currentRank = 999999999999999
     bestRank = currentRank
     bestM = M # if somehow we got to a lower rank in the projection process, we don't want to throw it out in the next projection
     bestIteration = iteration = 0
@@ -220,9 +220,10 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
         M = np.dot(U, np.dot(S,V)) # reconstruct with low rank
         projectionDistance = np.linalg.norm(oldM-M, ord=2) #L2 norm
         if debug:
-            print("now rank reduced:\n", M)
-            print("with rank:", np.linalg.matrix_rank(M))
-            print(projectionDistance)
+            pass
+            #print("now rank reduced:\n", M)
+            #print("with rank:", np.linalg.matrix_rank(M))
+            #print(projectionDistance)
 
         M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=None)
 
@@ -235,16 +236,19 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
             bestIteration = iteration
 
         if debug:
-            print("now side info corrected:\n", M)
-            print("with rank:", currentRank)
+            #print("now side info corrected:\n", M)
+            print("side info corrected with rank:", currentRank)
             print("\n\n")
-            input()
+            raw_input()
 
 
     if return_analysis:
-        M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
-        bestM = (bestM*(10**resultPrecisionDecimals)).astype(int)
-        return [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
+        if resultPrecisionDecimals is not None:
+            M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
+            bestM = (bestM*(10**resultPrecisionDecimals)).astype(int)
+        bestM = projectToD(bestM, sideInfoMatrix, roundPrecision=None)
+        M = projectToD(M, sideInfoMatrix, roundPrecision=None)
+        return [M.tolist(), thresholdRank(M), iteration], [bestM.tolist(), thresholdRank(bestM), bestIteration]
     else:
         if bestRank < currentRank:
             M = bestM

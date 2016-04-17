@@ -3,6 +3,10 @@ import sys, random, messages, algorithms, time
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import cPickle as pickle
+import decoding
+import encoding
+from decode_manager import DecodeManager
 
 def originalTest():
     RUNS = 1000
@@ -89,16 +93,37 @@ def sampleSideInfo(size, probOfDontCare):
     return (dontCares/nonDiagEntries, M)
 
 # a square matrixSize x matrixSize
-def timeSVDAP(targetRank, matrixSize=100):
+def timeSVDAP(targetRank, rounding=None, startingSize=999999999999, matrixSize=100):
+    results = [] # will hold a bunch of tuples of runs of APIndexCode
+    percentages = [0.05, 0.15, 0.25, 0.35, 0.55, 0.75, 0.85, 0.95]
+    for probOfDontCare in percentages:
+        print(len(results))
+        percentDontCare, M = sampleSideInfo(matrixSize, probOfDontCare)
+        start = time.time()
+        # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
+        last, best = algorithms.SVDAP(np.array(M), targetRank, startingSize, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
+        runTime = time.time() - start
+        iterations = best[2]
+        rankBeforeRounding = best[1]
+        rankAfterRounding = algorithms.thresholdRank( algorithms.projectToD(best[0], M, roundPrecision=rounding) )
+        results.append((percentDontCare, rankBeforeRounding , rankAfterRounding, iterations, runTime))
+
+    return results
+
+# a square matrixSize x matrixSize
+def timeLDG(targetRank, matrixSize=100):
     results = [] # will hold a bunch of tuples of runs of APIndexCode
     for probOfDontCare in np.arange(0, 1, 0.1):
         print(len(results))
         percentDontCare, M = sampleSideInfo(matrixSize, probOfDontCare)
         start = time.time()
         # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-        last, best = algorithms.SVDAP(np.array(M)*9999, targetRank, max_iterations=200, resultPrecisionDecimals=8, return_analysis=True)
+        startRank = algorithms.thresholdRank(M)
+        Mr = algorithms.LDG(np.array(M))
+        endRank = algorithms.thresholdRank(Mr)
+
         runTime = time.time() - start
-        results.append((percentDontCare, best[1], best[2], runTime))
+        results.append((percentDontCare, startRank-endRank, startRank, endRank, runTime))
 
     return results
 
@@ -146,19 +171,6 @@ def timeLDGStartDirAP(targetRank, matrixSize=100):
 
     return results
 
-results = []
-def recurseAP(M, targetRank, step):
-    start = time.time()
-    Mr, rank, iterations = algorithms.SVDAP(M, targetRank, 0.001, maxTimeSeconds=2)
-    runTime = time.time() - start
-    results.append((rank,iterations, runTime))
-    if rank > targetRank + 3:
-        return
-    percentageAchieved = 1-(rank - targetRank)/float(step)
-    if percentageAchieved > 1:
-        return
-    recurseAP(Mr, step*percentageAchieved, step*2)
-
 
 def testAPYah():
     #timeAP(100)
@@ -196,6 +208,91 @@ def testAPYah():
         fig.savefig("Small Reals/{}.png".format(r))
         plt.close(i)
 
+
+def roundingTest():
+    results = {}
+    for targetRank in range(1, 20, 2):
+        percentages = [0.05, 0.15, 0.25, 0.35, 0.55, 0.75, 0.85, 0.95]
+        for probOfDontCare in percentages:
+            percentDontCare, M = sampleSideInfo(20, probOfDontCare)
+            start = time.time()
+            # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
+            last, best = algorithms.SVDAP(np.array(M), targetRank, 1, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
+            runTime = time.time() - start
+            iterations = best[2]
+            rankBeforeRounding = best[1]
+            for rounding in [None, 8, 5, 3, 2, 1]:
+                rankAfterRounding = algorithms.thresholdRank( algorithms.projectToD(best[0], M, roundPrecision=rounding) )
+                results.append((percentDontCare, rounding, targetRank, rankBeforeRounding , rankAfterRounding, iterations, runTime))
+    pickle.dump(results, open("roundingTest.pkl","w+"))
+    for result in results:
+        string = "dontCares {}\nroundingPrecision {}\ntargetRank {}\nrankBeforeRounding {}\nrankAfterRounding {}\n" \
+                 "iterations {}\nruntime {}\n\n".format(result[0], result[1], result[2], result[3] , result[4], result[5], result[6])
+        raw_input(string)
+
+def initialDistributionTest():
+    startSizeResults = []
+    for startSize in range(12):
+        timingResultsAP = []
+        for targetRank in range(5,96, 10):
+            timingResultsAP[targetRank] = timeSVDAP(targetRank, 10**startSize)
+        startSizeResults[startSize] = timingResultsAP
+    pickle.dump(startSizeResults, open("initialDistTest.pkl", "w+"))
+    #startSizeResults = pickle.load(open("initialDistTest.pkl"))
+    for size in startSizeResults:
+        print "size ", size, ":\n"
+        timingResults = startSizeResults[size]
+        for targetRank in timingResults:
+            print "targetRank ", targetRank, ":\n"
+            raw_input(timingResults[targetRank])
+
+def testReduction():
+    times = 1
+    for targetRank in [1,3,5,7,9]:
+        for probOfDontCare in np.arange(0, 0.3, 0.1):
+            print "times: ", times, "\n"
+            times += 1
+            #print(len(results))
+            percentDontCare, M = sampleSideInfo(10, probOfDontCare)
+            #print("start:",algorithms.thresholdRank( M))
+            M = algorithms.expandLDG(algorithms.LDG(M), M)
+            #print("reduced/expanded:", algorithms.thresholdRank( M), "\n")
+            start = time.time()
+            # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
+            last, best = algorithms.SVDAP(np.array(M), targetRank, startSize=1, resultPrecisionDecimals=5, return_analysis=True)
+            bestRank = best[1]
+            bestIterations = best[2]
+            print( bestRank, algorithms.thresholdRank(best[0]), np.linalg.matrix_rank(M) )
+            runTime = time.time() - start
+            gaussResult = decoding.decodeWithRR(best[0], [1]*len(best[0]))
+            print "best rank matrix:\n", np.array(best[0]), "\n"
+            print gaussResult, "\n"
+            raw_input((percentDontCare, targetRank, bestRank, len(gaussResult), runTime))
+
+def testDecoding():
+    dm = DecodeManager(6)
+    sideInfo = sampleSideInfo(5, 0.8)
+    m1 = encoding.EncodedMessage(b"message 1 asdf")
+    m2 = encoding.EncodedMessage(b"message 2 asdf")
+    m3 = encoding.EncodedMessage(b"message 3 asdf")
+    m4 = encoding.EncodedMessage(b"message 4 asdf")
+    m5 = encoding.EncodedMessage(b"message 5 asdf")
+    messages = [m1.getEncoding(), m2.getEncoding(), m3.getEncoding(), m4.getEncoding(), m5.getEncoding()]
+    encodedMessages = []
+    for i, coeffs in enumerate(sideInfo):
+        encodedMessage = 0
+        for j, m in enumerate(messages):
+            encodedMessage += (m * coeffs[j])
+        encodedMessages.append(encodedMessage)
+
+    print encodedMessages
+
+
+    print
+
+
+
+
 def testLDG():
 	for i in range(0,100,10):
 		percentDontCare, M = sampleSideInfo(10, i/100.0)
@@ -218,9 +315,35 @@ def testLDGExpansion():
         #print np.linalg.matrix_rank(reducedM), "\n"
         #print np.linalg.matrix_rank(expandedM), "\n\n---------\n\n"
 
-results = timeLDGStartDirAP(25, 50)
-for pack in results:
-    raw_input(pack)
+# search over target rank, percent of side info, rounding precision, with or without LDG starting point
+def gridSearchAP():
+
+    for i in range(0,100,10):
+        timingResultsAP = {}
+        timingResultsLDG = {}
+        timingResultsMixed = {}
+        for targetRank in range(5,96, 10):
+            timingResultsAP[targetRank] = timeSVDAP(targetRank)
+            timingResultsLDG[targetRank] = timeLDG(targetRank)
+            timingResultsMixed[targetRank] = timeLDGStartAP(targetRank)
+
+        targetDontcare = i/100.0
+        actualDontCare, M = sampleSideInfo(5, targetDontcare)
+        reducedM = algorithms.LDG(M)
+        expandedM = algorithms.expandLDG(reducedM, M)
+        print(M, "\n\n")
+        print (np.array(reducedM), "\n\n")
+        print (np.array(expandedM), "\n\n---------\n\n")
+
+
+testDecoding()
+#testReduction()
+#roundingTest()
+#initialDistributionTest()
+
+#results = timeLDGStartDirAP(25, 50)
+#for pack in results:
+#    raw_input(pack)
 #testLDGExpansion()
 # (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,
 #print dirAP(testMatrix(50,0.5)[1],  30)
