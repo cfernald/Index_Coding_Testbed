@@ -58,12 +58,22 @@ def SVDAP_proxy(acks_orig, desired_rank=0.75):
     #print(np.array(result))
     result = decoding.gauss(result)[0]
     #print(np.array(result))
+    
+    # Remove the messages that are uneeded
+    '''i = 0
+    while i < len(result):
+        zero = all(result[i][j] == 0 for j in range(len(result[i])))
+        if zero:
+            del result[i]
+        else:
+            i += 1
+    '''
 
     # tranform back to full data set
     removed_nodes.reverse()
-    for col in result:
+    for row in result:
         for node in removed_nodes:
-            col.insert(node, 0)
+            row.insert(node, 0)
 
     return result
 
@@ -255,7 +265,7 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
             print("with rank:", np.linalg.matrix_rank(M))
             print(projectionDistance)
 
-        M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=None)
+        M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=resultPrecisionDecimals)
 
 
         oldM = M
@@ -279,7 +289,7 @@ def SVDAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.
     else:
         if bestRank < currentRank:
             M = bestM
-        M = projectToD(M,sideInfoMatrix,roundPrecision=resultPrecisionDecimals)
+        #M = projectToD(M,sideInfoMatrix,roundPrecision=None)
         M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
         return M.tolist()
 
