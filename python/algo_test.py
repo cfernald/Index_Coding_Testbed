@@ -103,7 +103,7 @@ def timeSVDAP(targetRank, rounding=None, startingSize=999999999999, matrixSize=1
         percentDontCare, M = sampleSideInfo(matrixSize, probOfDontCare)
         start = time.time()
         # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-        last, best = algorithms.SVDAP(np.array(M), targetRank, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
+        last, best = algorithms.SVDAP(np.array(M), targetRank, max_iterations=200, precisionDecimals=0, return_analysis=True)
         runTime = time.time() - start
         iterations = best[2]
         rankBeforeRounding = best[1]
@@ -150,7 +150,7 @@ def timeLDGStartAP(targetRank, matrixSize=100):
         print("reduced/expanded:", algorithms.thresholdRank( M), "\n")
         start = time.time()
         # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-        last, best = algorithms.SVDAP(np.array(M)*9999999999, targetRank, resultPrecisionDecimals=8, return_analysis=True)
+        last, best = algorithms.SVDAP(np.array(M)*9999999999, targetRank, precisionDecimals=8, return_analysis=True)
         runTime = time.time() - start
         results.append((percentDontCare, last[1:], best[1:], runTime))
 
@@ -219,7 +219,7 @@ def roundingTest():
             percentDontCare, M = sampleSideInfo(20, probOfDontCare)
             start = time.time()
             # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-            last, best = algorithms.SVDAP(np.array(M), targetRank, 1, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
+            last, best = algorithms.SVDAP(np.array(M), targetRank, 1, max_iterations=200, precisionDecimals=None, return_analysis=True)
             runTime = time.time() - start
             iterations = best[2]
             rankBeforeRounding = best[1]
@@ -250,8 +250,8 @@ def initialDistributionTest():
 
 def testReduction():
     times = 1
-    for targetRank in [1,3,5,7,9]:
-        for probOfDontCare in np.arange(0, 0.3, 0.1):
+    for targetRank in [1,3, 5]:
+        for probOfDontCare in [0.1, 0.2, 0.7, 0.8]:
             print("times: ", times, "\n")
             times += 1
             #print(len(results))
@@ -261,14 +261,19 @@ def testReduction():
             #print("reduced/expanded:", algorithms.thresholdRank( M), "\n")
             start = time.time()
             # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-            last, best = algorithms.SVDAP(np.array(M), targetRank, startSize=1, resultPrecisionDecimals=5, return_analysis=True)
+            last, best = algorithms.SVDAP(np.array(M), targetRank, startSize=1, precisionDecimals=1, return_analysis=True)
             bestRank = best[1]
             bestIterations = best[2]
-            print( bestRank, algorithms.thresholdRank(best[0]), np.linalg.matrix_rank(M) )
-            runTime = time.time() - start
+            # a hack to check the rank acording to gauss; since no side info has been subtracted from the matrix, decodable stuff will==rank
             gaussResult = decoding.decodeWithRR(best[0], [1]*len(best[0]))
-            print("best rank matrix:\n", np.array(best[0]), "\n")
-            print(gaussResult, "\n")
+            print( bestRank, algorithms.thresholdRank(best[0]), np.linalg.matrix_rank(M), len(gaussResult))
+            runTime = time.time() - start
+
+            print(np.array(best[0]))
+            print
+            print(np.array(decoding.gauss(best[0]))[0])
+            print("\n")
+            #print(gaussResult, "\n")
             raw_input((percentDontCare, targetRank, bestRank, len(gaussResult), runTime))
 
 def testDecoding():
@@ -372,8 +377,8 @@ def decodeTest():
 		
 	print(decoded)
 
-decodeTest()
-
+#decodeTest()
+testReduction()
 
 #testLDGExpansion()
 # (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,

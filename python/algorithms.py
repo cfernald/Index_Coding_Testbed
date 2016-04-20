@@ -212,13 +212,17 @@ def projectToD(M, sideInfoMatrix, zeroThreshold=0.0001, roundPrecision=4):
 
     for i in range(n):
         for j in range(m):
+            wouldRoundTo = M[i][j]
+            if roundPrecision is not None:
+                wouldRoundTo = round(M[i][j], roundPrecision)
+
             # if we need to include it and it's been zeroed out
-            if sideInfoMatrix[i][j] == 1 and abs(M[i][j]) < zeroThreshold:
+            if sideInfoMatrix[i][j] == 1 and (abs(M[i][j]) < zeroThreshold  or wouldRoundTo == 0):
                 M[i][j] = 1 # might set this to the average of the column, or something
             elif sideInfoMatrix[i][j] == 0:
                 M[i][j] = 0
             elif roundPrecision is not None:
-                M[i][j] = round(M[i][j], roundPrecision)
+                M[i][j] = wouldRoundTo
     return M
 
 
@@ -230,7 +234,7 @@ def thresholdRank(M, eig_size_tolerance=0.0001):
     return rank
     #versus #return np.linalg.matrix_rank(M)
 
-def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
+def SVDAP(sideInfoMatrix, targetRank, startSize=10, startingMatrix=None, eig_size_tolerance=0.0001, precisionDecimals=1, max_iterations=100, return_analysis=False):
     debug = False
 
     # initialization
@@ -243,7 +247,8 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
 
     if startingMatrix is None:
         startingMatrix = np.random.rand(n,m)*startSize # randomly distributed large numbers
-    oldM = M = startingMatrix # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
+    # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
+    oldM = M = projectToD(startingMatrix, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=precisionDecimals)
 
     projectionDistance = 9999999999 # initalized to a large value
     currentRank = thresholdRank(M, eig_size_tolerance)
@@ -267,7 +272,7 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
             #print("with rank:", np.linalg.matrix_rank(M))
             #print(projectionDistance)
 
-        M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=resultPrecisionDecimals)
+        M = projectToD(M, sideInfoMatrix, zeroThreshold=eig_size_tolerance, roundPrecision=precisionDecimals)
 
 
         oldM = M
@@ -285,9 +290,9 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
 
 
     if return_analysis:
-        if resultPrecisionDecimals is not None:
-            M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
-            bestM = (bestM*(10**resultPrecisionDecimals)).astype(int)
+        if precisionDecimals is not None:
+            M = (M*(10**precisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
+            bestM = (bestM*(10**precisionDecimals)).astype(int)
         bestM = projectToD(bestM, sideInfoMatrix, roundPrecision=None)
         M = projectToD(M, sideInfoMatrix, roundPrecision=None)
         return [M.tolist(), thresholdRank(M), iteration], [bestM.tolist(), thresholdRank(bestM), bestIteration]
@@ -295,7 +300,7 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
         if bestRank < currentRank:
             M = bestM
         #M = projectToD(M,sideInfoMatrix,roundPrecision=None)
-        M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
+        M = (M*(10**precisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
         return M.tolist()
 
 def dirAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
@@ -417,3 +422,16 @@ def expandLDG(M, sideInfoMatrix):
 
     return expandedSideInfo
 
+def testGauss():
+    '''
+    A = np.eye(10)
+    for i in range(len(A)):
+        A[i][i] = random.randint(0,9999)
+    print A, "\n", decoding.gauss(A)[0],"\n"
+    '''
+
+    A = np.array([[1,0,0,0,0,0], [0,1,0,0,0,0], [0,0,1,0,0,0], [112314,0,9991,0,0,0], [1123,9891,0,0,0,0], [91,71,81,0,0,1]])
+    print A, "\n", decoding.gauss(A)[0],"\n"
+
+
+#testGauss()

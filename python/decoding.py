@@ -2,11 +2,13 @@ __author__ = 'ryan'
 
 from encoding import EncodedMessage
 import time, errno
+import copy
 
 TIMEOUT = 10.0
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
 def gauss(A, decodingSteps=None):
+    A = copy.deepcopy(A)
     num_rows = len(A) # rows
     num_cols = len(A[0]) # columns
 
@@ -72,6 +74,7 @@ def gauss(A, decodingSteps=None):
             for j in range(0, num_rows):
                 decodingSteps[k][j] = decodingSteps[k][j]*curRowMult  -  decodingSteps[i][j]*pivotMult
 
+    zeroedRow = []
     # reducing on the way up is slightly different, because though we want to go row by row, we want to eliminate the last column, and since
     # the matrix may not be square, we cannot use the same index variable for pivot row and column
     pivotCol = num_cols-1 # initialize this to the index of the last column
@@ -106,9 +109,27 @@ def gauss(A, decodingSteps=None):
             for j in range(num_rows-1, -1, -1):
                 decodingSteps[k][j] = decodingSteps[k][j]*curRowMult - decodingSteps[i][j]*pivotMult
 
+
         pivotCol = savePivotCol-1 # if we went left to find a non-zero entry, go back, and resume the normal up one left one progression
 
-    return A, decodingSteps
+
+    # if we zeroed out a row, we want to move it to the bottom at the end
+    for i in range(num_rows):
+        if all(int(n)==0 for n in A[i]):
+            zeroedRow.append(i)
+    retA = []
+    retSteps = []
+    for i in range(num_rows):
+        if i not in zeroedRow:
+            retA.append(A[i])
+            retSteps.append(decodingSteps[i])
+    zeroedRow.reverse()
+    for i in zeroedRow:
+        retA.append(A[i])
+        retSteps.append(decodingSteps[i])
+
+
+    return retA, retSteps
 
 # this just works with int/long (need to adapt for data structure)
 # and assumes only positive values
