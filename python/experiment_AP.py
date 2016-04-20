@@ -23,8 +23,8 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 50000
-NUM_TESTS = 50
+MSG_LEN = 25000
+NUM_TESTS = 25
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
@@ -34,7 +34,7 @@ ROUNDS_TIMEOUT = 100
 # "rr" = Round Robin
 # "ldg" = least difference geedy
 # "svdap" = SVD Alternating Projection)
-ENCODE_ALGOS = ["rr", "ldg", "svdap"]
+ENCODE_ALGOS = ["rr", "svdap"]
 # Sleep times
 SLEEP_BROADCASTS = 0.01
 SLEEP_TESTS = 1.0
@@ -134,11 +134,16 @@ for test in range(NUM_TESTS):
                             received[i][j] = 0
 
                 col_avgs = []
+                col_vars = []
                 for i in range(len(nodes)):
-                   col_avgs.append(sum(received[i][j] for j in range(len(received))) / len(received))
+                    col = []
+                    for j in range(len(received)):
+                        col.append(received[i][j])
+                    col_avgs.append(sum(col)/len(col))
+                    col_vars.append(statistics.variance(col))
                 
                 loss = 1 - sum(col_avgs)/len(col_avgs)
-                msg_correlation = statistics.variance(col_avgs)
+                msg_correlation = sum(col_vars)/len(col_vars)
 
             
             # calculate the rank RR would produce
@@ -147,7 +152,11 @@ for test in range(NUM_TESTS):
                 if acks.acks[i][i] == 1:
                     base_rank += 1
 
-            toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
+            try:
+                toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
+            except TimeoutError:
+                failed = True
+                break
 
             rank_diff += base_rank - len(toSend)
             if rank_diff < 0:

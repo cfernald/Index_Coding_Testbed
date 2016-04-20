@@ -1,7 +1,9 @@
 __author__ = 'ryan'
 
 from encoding import EncodedMessage
-import time
+import time, errno
+
+TIMEOUT = 10.0
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
 def gauss(A, decodingSteps=None):
@@ -23,6 +25,7 @@ def gauss(A, decodingSteps=None):
             decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
 
     # for each row i forwards
+    start_time = time.time()
     for i in range(0, num_rows):
         # Search for maximum in this column
         maxEl = abs(A[i][i])
@@ -51,6 +54,8 @@ def gauss(A, decodingSteps=None):
         # Make all rows below this one 0 in current column
         curRowMult = A[i][i] # doesn't change for the rows below
         for k in range(i+1, num_rows):
+            if time.time() - start_time > TIMEOUT:
+                raise TimeoutError("Gauss took too long")
             pivotMult = A[k][i]
 
             # don't reduce this row if it is already reduced
@@ -85,6 +90,8 @@ def gauss(A, decodingSteps=None):
         # Make all rows above this one 0 in current column
         curRowMult = A[i][pivotCol] # doesn't change for the rows above
         for k in range(i-1,-1,-1):
+            if time.time() - start_time > TIMEOUT:
+                raise TimeoutError("Gauss took too long")
             pivotMult = A[k][pivotCol]
 
             # don't reduce this row if it is already reduced

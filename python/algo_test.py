@@ -1,5 +1,7 @@
 # This is a script to test the algorithms 
 import sys, random, messages, algorithms, time
+from decode_manager import DecodeManager
+import encoding
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
@@ -344,6 +346,35 @@ def gridSearchAP():
 #results = timeLDGStartDirAP(25, 50)
 #for pack in results:
 #    raw_input(pack)
+
+def decodeTest():
+	dm = DecodeManager(6)
+	sideInfo = sampleSideInfo(6, 0.8)[1]
+	m1 = encoding.EncodedMessage(b"message 1 asdf")
+	m2 = encoding.EncodedMessage(b"message 2 asdf")
+	m3 = encoding.EncodedMessage(b"message 3 asdf")
+	m4 = encoding.EncodedMessage(b"message 4 asdf")
+	m5 = encoding.EncodedMessage(b"message 5 asdf")
+	m6 = encoding.EncodedMessage(b"message 6 asdf")
+	messages = [m1, m2,m3,m4,m5, m6]
+	encodedMessages = []
+	
+	for i, coeffs in enumerate(sideInfo):
+		print(coeffs)
+		encodedMessage = 0
+		for j, m in enumerate(messages):
+			encodedMessage = encodedMessage + (m * coeffs[j])
+		encodedMessages.append(encodedMessage)
+	decoded = None
+	for i in range(len(sideInfo)):
+		decoded = dm.addMessage(sideInfo[i], messages[i].toBytes(removeMarker=False))
+		
+		
+	print(decoded)
+
+decodeTest()
+
+
 #testLDGExpansion()
 # (sideInfoMatrix,startMatrix, targetRank, eig_size_tolerance,
 #print dirAP(testMatrix(50,0.5)[1],  30)
