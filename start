@@ -7,7 +7,7 @@
 NUM_ARGS=1
 USAGE="Usage: start {xml-test-file} "
 USERS="blue"
-UPDATE=1
+UPDATE_CODE=1
 FIND_NODES=0
 
 if [ $# -ne $NUM_ARGS ]; then
@@ -28,12 +28,13 @@ if [ $FIND_NODES -gt 0 ]; then
 fi
 
 # lets push the code to the nodes
-if [ $UPDATE -gt 0 ]; then
-    echo "updating node's code"
+if [ $UPDATE_CODE -gt 0 ]; then
+    printf "updating node's code"
     for node in $nodes; do
-        ./scripts/sync $node
+        printf "."
+        ./scripts/sync $node > /dev/null
     done
-    echo "done updating code"
+    echo " done updating code"
 fi
 
 echo "Starting nodes..."
@@ -52,7 +53,7 @@ for node in $nodes; do
     #ids="$ids$id "
 
     # Start the nodes
-    echo "Starting node-$id as node: $node_num" #| tee $LOG_FILE
+    echo "Starting node-$id as node: $node_num" | tee $LOG_FILE
 
     # Assign the node a test number and start the node
     ssh "$USERS@$node" "./research/364d-udp/node_start $node_num $num_nodes"
@@ -67,10 +68,10 @@ done
 echo "nodes started: $ids" | tee $LOG_FILE
 
 echo "Starting experiment."
-python3 python/experiment_AP.py "$ids" "$LOG_DIR" #| tee $LOG_FILE
+python3 python/experiment_AP.py "$ids" "$LOG_DIR" | tee -i $LOG_FILE
 echo "Python testing completed"
 
-echo "Shuttinf down and grabbing log files..."
+echo "Shutting down and grabbing log files..."
 for node in $nodes; do
     ssh "$USERS@$node" "./research/364d-udp/node_stop"
     rsync -v "blue@$node:/home/blue/logs/*.log" $LOG_DIR

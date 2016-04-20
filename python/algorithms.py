@@ -10,7 +10,7 @@ import sys
 'This is the file that contains the algorithm codes and determines with algorithm is being used'
 
 DONT_CARE = -42
-def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=0.00001):
+def reduceMessages(msgs, acks, tid, algo="rr"):
     new_messages = []
     
     #print(acks)
@@ -21,9 +21,7 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
         elif algo == "ldg":
             result = LDG(acks)
         elif algo == "svdap":
-            rank = np.linalg.matrix_rank(acks)
-            result = SVDAP(acks, int(desired_rank * rank), eig_tolerance)[0]
-            result = decoding.gauss(result)[0]
+            result = SVDAP_proxy(acks)
         else:
             print("ERROR: Unknown encoding algorithm")
             assert False
@@ -36,6 +34,38 @@ def reduceMessages(msgs, acks, tid, algo="rr", desired_rank=0.75, eig_tolerance=
             new_messages.append(msg)
 
     return new_messages
+
+
+def SVDAP_proxy(acks_orig, desired_rank=0.75):
+    acks = copy.deepcopy(acks_orig)
+    removed_nodes = []
+    for i in range(len(acks)):
+        if acks[i][i] != 1:
+            removed_nodes.append(i) 
+
+    removed_nodes.reverse()
+    # remove the uneeded rows
+    for node in removed_nodes:
+        del acks[node]
+    # remove the columns too
+    for col in acks:
+        for node in removed_nodes:
+            del col[node]
+            
+    rank = np.linalg.matrix_rank(acks) 
+    result = SVDAP(acks, int(desired_rank * rank))
+    #print(np.array(acks))
+    #print(np.array(result))
+    result = decoding.gauss(result)[0]
+    #print(np.array(result))
+
+    # tranform back to full data set
+    removed_nodes.reverse()
+    for col in result:
+        for node in removed_nodes:
+            col.insert(node, 0)
+
+    return result
 
 
 def roundRobin(msgs, acks):
@@ -204,8 +234,10 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
     if startingMatrix is None:
         startingMatrix = np.random.rand(n,m)*startSize # randomly distributed large numbers
     oldM = M = startingMatrix # M is what you work with, oldM is the past iteration's M, used for calculating projection distance
-    projectionDistance = 999999999999999 # initalized to a large value
-    currentRank = 999999999999999
+
+    projectionDistance = 9999999999 # initalized to a large value
+    currentRank = thresholdRank(M, eig_size_tolerance)
+
     bestRank = currentRank
     bestM = M # if somehow we got to a lower rank in the projection process, we don't want to throw it out in the next projection
     bestIteration = iteration = 0
@@ -254,7 +286,7 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=1, startingMatrix=None, eig_size
             M = bestM
         M = projectToD(M,sideInfoMatrix,roundPrecision=resultPrecisionDecimals)
         M = (M*(10**resultPrecisionDecimals)).astype(int) # multiply to whole numbers and convert to integer type
-        return M
+        return M.tolist()
 
 def dirAP(sideInfoMatrix, targetRank, startingMatrix=None, eig_size_tolerance=0.0001, resultPrecisionDecimals=4, max_iterations=100, return_analysis=False):
     # a helper function to project to region C

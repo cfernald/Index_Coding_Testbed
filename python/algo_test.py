@@ -101,7 +101,7 @@ def timeSVDAP(targetRank, rounding=None, startingSize=999999999999, matrixSize=1
         percentDontCare, M = sampleSideInfo(matrixSize, probOfDontCare)
         start = time.time()
         # [M.tolist(), currentRank, iteration], [bestM.tolist(), bestRank, bestIteration]
-        last, best = algorithms.SVDAP(np.array(M), targetRank, startingSize, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
+        last, best = algorithms.SVDAP(np.array(M), targetRank, max_iterations=200, resultPrecisionDecimals=None, return_analysis=True)
         runTime = time.time() - start
         iterations = best[2]
         rankBeforeRounding = best[1]
@@ -240,17 +240,17 @@ def initialDistributionTest():
     pickle.dump(startSizeResults, open("initialDistTest.pkl", "w+"))
     #startSizeResults = pickle.load(open("initialDistTest.pkl"))
     for size in startSizeResults:
-        print "size ", size, ":\n"
+        print("size ", size, ":\n")
         timingResults = startSizeResults[size]
         for targetRank in timingResults:
-            print "targetRank ", targetRank, ":\n"
+            print("targetRank ", targetRank, ":\n")
             raw_input(timingResults[targetRank])
 
 def testReduction():
     times = 1
     for targetRank in [1,3,5,7,9]:
         for probOfDontCare in np.arange(0, 0.3, 0.1):
-            print "times: ", times, "\n"
+            print("times: ", times, "\n")
             times += 1
             #print(len(results))
             percentDontCare, M = sampleSideInfo(10, probOfDontCare)
@@ -265,8 +265,8 @@ def testReduction():
             print( bestRank, algorithms.thresholdRank(best[0]), np.linalg.matrix_rank(M) )
             runTime = time.time() - start
             gaussResult = decoding.decodeWithRR(best[0], [1]*len(best[0]))
-            print "best rank matrix:\n", np.array(best[0]), "\n"
-            print gaussResult, "\n"
+            print("best rank matrix:\n", np.array(best[0]), "\n")
+            print(gaussResult, "\n")
             raw_input((percentDontCare, targetRank, bestRank, len(gaussResult), runTime))
 
 def testDecoding():
@@ -285,7 +285,7 @@ def testDecoding():
             encodedMessage += (m * coeffs[j])
         encodedMessages.append(encodedMessage)
 
-    print encodedMessages
+    print(encodedMessages)
 
 
     print
@@ -336,7 +336,7 @@ def gridSearchAP():
         print (np.array(expandedM), "\n\n---------\n\n")
 
 
-testDecoding()
+#testDecoding()
 #testReduction()
 #roundingTest()
 #initialDistributionTest()

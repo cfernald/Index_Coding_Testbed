@@ -1,0 +1,331 @@
+Starting experiment with nodes:  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] using ['rr', 'ldg', 'svdap']
+Starting experiment 0 rr
+Finished test 0 rr with 9 rounds in 21.98008418083191 seconds
+Starting experiment 0 ldg
+Finished test 0 ldg with 11 rounds in 15.39479923248291 seconds
+Starting experiment 0 svdap
+Finished test 0 svdap with 4 rounds in 14.82089638710022 seconds
+Starting experiment 1 rr
+Finished test 1 rr with 10 rounds in 31.1957905292511 seconds
+Starting experiment 1 ldg
+Finished test 1 ldg with 6 rounds in 25.089409112930298 seconds
+Starting experiment 1 svdap
+Finished test 1 svdap with 18 rounds in 32.53720140457153 seconds
+Starting experiment 2 rr
+Finished test 2 rr with 17 rounds in 26.743427991867065 seconds
+Starting experiment 2 ldg
+Finished test 2 ldg with 14 rounds in 31.32939600944519 seconds
+Starting experiment 2 svdap
+Finished test 2 svdap with 6 rounds in 21.081125020980835 seconds
+Starting experiment 3 rr
+Finished test 3 rr with 16 rounds in 44.850545167922974 seconds
+Starting experiment 3 ldg
+Finished test 3 ldg with 28 rounds in 68.70396685600281 seconds
+Starting experiment 3 svdap
+Finished test 3 svdap with 10 rounds in 19.89367437362671 seconds
+Starting experiment 4 rr
+Finished test 4 rr with 4 rounds in 7.8831024169921875 seconds
+Starting experiment 4 ldg
+Finished test 4 ldg with 70 rounds in 70.13493204116821 seconds
+Starting experiment 4 svdap
+Finished test 4 svdap with 50 rounds in 117.18283295631409 seconds
+Starting experiment 5 rr
+Finished test 5 rr with 8 rounds in 50.99546813964844 seconds
+Starting experiment 5 ldg
+Finished test 5 ldg with 14 rounds in 32.22216010093689 seconds
+Starting experiment 5 svdap
+Finished test 5 svdap with 11 rounds in 21.357145309448242 seconds
+Starting experiment 6 rr
+Finished test 6 rr with 36 rounds in 51.74455714225769 seconds
+Starting experiment 6 ldg
+Finished test 6 ldg with 8 rounds in 25.116422176361084 seconds
+Starting experiment 6 svdap
+Finished test 6 svdap with 5 rounds in 15.481045484542847 seconds
+Starting experiment 7 rr
+Finished test 7 rr with 21 rounds in 31.631076335906982 seconds
+Starting experiment 7 ldg
+Finished test 7 ldg with 76 rounds in 68.81602072715759 seconds
+Experiment timed out
+Starting experiment 7 svdap
+Finished test 7 svdap with 10 rounds in 45.07756972312927 seconds
+Starting experiment 8 rr
+Finished test 8 rr with 4 rounds in 13.558550834655762 seconds
+Starting experiment 8 ldg
+Finished test 8 ldg with 4 rounds in 20.141977071762085 seconds
+Starting experiment 8 svdap
+Finished test 8 svdap with 15 rounds in 31.95945978164673 seconds
+Starting experiment 9 rr
+Finished test 9 rr with 13 rounds in 25.793339014053345 seconds
+Starting experiment 9 ldg
+Finished test 9 ldg with 17 rounds in 35.438496589660645 seconds
+Starting experiment 9 svdap
+Finished test 9 svdap with 10 rounds in 44.70409178733826 seconds
+Starting experiment 10 rr
+Finished test 10 rr with 11 rounds in 36.16608285903931 seconds
+Starting experiment 10 ldg
+Finished test 10 ldg with 76 rounds in 136.0245382785797 seconds
+Experiment timed out
+Starting experiment 10 svdap
+Finished test 10 svdap with 40 rounds in 166.2478792667389 seconds
+Starting experiment 11 rr
+Finished test 11 rr with 11 rounds in 40.62280464172363 seconds
+Starting experiment 11 ldg
+Finished test 11 ldg with 12 rounds in 42.91872572898865 seconds
+Starting experiment 11 svdap
+Finished test 11 svdap with 12 rounds in 32.55455708503723 seconds
+Starting experiment 12 rr
+Finished test 12 rr with 36 rounds in 52.61972379684448 seconds
+Starting experiment 12 ldg
+Finished test 12 ldg with 11 rounds in 40.66534948348999 seconds
+Starting experiment 12 svdap
+Finished test 12 svdap with 13 rounds in 51.56247425079346 seconds
+Starting experiment 13 rr
+Finished test 13 rr with 12 rounds in 24.38189387321472 seconds
+Starting experiment 13 ldg
+Finished test 13 ldg with 6 rounds in 14.846978664398193 seconds
+Starting experiment 13 svdap
+Finished test 13 svdap with 21 rounds in 43.458232164382935 seconds
+Starting experiment 14 rr
+Finished test 14 rr with 6 rounds in 16.708698272705078 seconds
+Starting experiment 14 ldg
+Finished test 14 ldg with 9 rounds in 24.487948894500732 seconds
+Starting experiment 14 svdap
+Finished test 14 svdap with 5 rounds in 16.774567365646362 seconds
+Starting experiment 15 rr
+Finished test 15 rr with 27 rounds in 30.868282556533813 seconds
+Starting experiment 15 ldg
+Finished test 15 ldg with 10 rounds in 26.332809686660767 seconds
+Starting experiment 15 svdap
+Finished test 15 svdap with 5 rounds in 16.62835931777954 seconds
+Starting experiment 16 rr
+Finished test 16 rr with 15 rounds in 25.25951600074768 seconds
+Starting experiment 16 ldg
+Finished test 16 ldg with 64 rounds in 79.39324307441711 seconds
+Starting experiment 16 svdap
+Finished test 16 svdap with 10 rounds in 121.8542377948761 seconds
+Starting experiment 17 rr
+Finished test 17 rr with 13 rounds in 37.426308393478394 seconds
+Starting experiment 17 ldg
+Finished test 17 ldg with 10 rounds in 27.670812606811523 seconds
+Starting experiment 17 svdap
+Finished test 17 svdap with 9 rounds in 21.636889457702637 seconds
+Starting experiment 18 rr
+Finished test 18 rr with 11 rounds in 23.87251329421997 seconds
+Starting experiment 18 ldg
+Finished test 18 ldg with 5 rounds in 19.41065788269043 seconds
+Starting experiment 18 svdap
+Finished test 18 svdap with 5 rounds in 16.932700157165527 seconds
+Starting experiment 19 rr
+Finished test 19 rr with 7 rounds in 12.784761667251587 seconds
+Starting experiment 19 ldg
+Finished test 19 ldg with 5 rounds in 9.595401763916016 seconds
+Starting experiment 19 svdap
+Finished test 19 svdap with 8 rounds in 20.11524796485901 seconds
+Starting experiment 20 rr
+Finished test 20 rr with 5 rounds in 9.85399317741394 seconds
+Starting experiment 20 ldg
+Finished test 20 ldg with 4 rounds in 19.995401859283447 seconds
+Starting experiment 20 svdap
+Finished test 20 svdap with 8 rounds in 17.666423559188843 seconds
+Starting experiment 21 rr
+Finished test 21 rr with 7 rounds in 20.246029376983643 seconds
+Starting experiment 21 ldg
+Finished test 21 ldg with 2 rounds in 8.203165054321289 seconds
+Starting experiment 21 svdap
+Finished test 21 svdap with 7 rounds in 18.051564693450928 seconds
+Starting experiment 22 rr
+Finished test 22 rr with 6 rounds in 18.192378520965576 seconds
+Starting experiment 22 ldg
+Finished test 22 ldg with 6 rounds in 9.933805465698242 seconds
+Starting experiment 22 svdap
+Finished test 22 svdap with 6 rounds in 20.88422131538391 seconds
+Starting experiment 23 rr
+Finished test 23 rr with 7 rounds in 21.752085208892822 seconds
+Starting experiment 23 ldg
+Finished test 23 ldg with 7 rounds in 16.339733839035034 seconds
+Starting experiment 23 svdap
+Finished test 23 svdap with 2 rounds in 7.732131004333496 seconds
+Starting experiment 24 rr
+Finished test 24 rr with 7 rounds in 12.408112049102783 seconds
+Starting experiment 24 ldg
+Finished test 24 ldg with 4 rounds in 9.028532028198242 seconds
+Starting experiment 24 svdap
+Finished test 24 svdap with 6 rounds in 19.616380214691162 seconds
+Starting experiment 25 rr
+Finished test 25 rr with 6 rounds in 11.990171670913696 seconds
+Starting experiment 25 ldg
+Finished test 25 ldg with 5 rounds in 17.492001056671143 seconds
+Starting experiment 25 svdap
+Finished test 25 svdap with 4 rounds in 13.822543144226074 seconds
+Starting experiment 26 rr
+Finished test 26 rr with 3 rounds in 10.139992237091064 seconds
+Starting experiment 26 ldg
+Finished test 26 ldg with 4 rounds in 14.020042896270752 seconds
+Starting experiment 26 svdap
+Finished test 26 svdap with 7 rounds in 15.652813196182251 seconds
+Starting experiment 27 rr
+Finished test 27 rr with 6 rounds in 16.076727867126465 seconds
+Starting experiment 27 ldg
+Finished test 27 ldg with 5 rounds in 12.600025177001953 seconds
+Starting experiment 27 svdap
+Finished test 27 svdap with 9 rounds in 11.40172028541565 seconds
+Starting experiment 28 rr
+Finished test 28 rr with 9 rounds in 19.676783084869385 seconds
+Starting experiment 28 ldg
+Finished test 28 ldg with 6 rounds in 18.806360721588135 seconds
+Starting experiment 28 svdap
+Finished test 28 svdap with 11 rounds in 20.073408126831055 seconds
+Starting experiment 29 rr
+Finished test 29 rr with 5 rounds in 16.63472557067871 seconds
+Starting experiment 29 ldg
+Finished test 29 ldg with 4 rounds in 14.428625583648682 seconds
+Starting experiment 29 svdap
+Finished test 29 svdap with 4 rounds in 11.75744366645813 seconds
+Starting experiment 30 rr
+Finished test 30 rr with 4 rounds in 9.907036304473877 seconds
+Starting experiment 30 ldg
+Finished test 30 ldg with 5 rounds in 19.750276803970337 seconds
+Starting experiment 30 svdap
+Finished test 30 svdap with 8 rounds in 16.73266053199768 seconds
+Starting experiment 31 rr
+Finished test 31 rr with 5 rounds in 22.79941725730896 seconds
+Starting experiment 31 ldg
+Finished test 31 ldg with 9 rounds in 11.346778392791748 seconds
+Starting experiment 31 svdap
+Finished test 31 svdap with 2 rounds in 7.8488404750823975 seconds
+Starting experiment 32 rr
+Finished test 32 rr with 9 rounds in 23.51148247718811 seconds
+Starting experiment 32 ldg
+Finished test 32 ldg with 6 rounds in 9.056933164596558 seconds
+Starting experiment 32 svdap
+Finished test 32 svdap with 3 rounds in 21.31878900527954 seconds
+Starting experiment 33 rr
+Finished test 33 rr with 5 rounds in 14.82949948310852 seconds
+Starting experiment 33 ldg
+Finished test 33 ldg with 7 rounds in 16.890530824661255 seconds
+Starting experiment 33 svdap
+Finished test 33 svdap with 8 rounds in 12.221247673034668 seconds
+Starting experiment 34 rr
+Finished test 34 rr with 9 rounds in 16.716742992401123 seconds
+Starting experiment 34 ldg
+Finished test 34 ldg with 2 rounds in 8.7626211643219 seconds
+Starting experiment 34 svdap
+Finished test 34 svdap with 5 rounds in 17.43431568145752 seconds
+Starting experiment 35 rr
+Finished test 35 rr with 9 rounds in 21.163408041000366 seconds
+Starting experiment 35 ldg
+Finished test 35 ldg with 7 rounds in 18.262592315673828 seconds
+Starting experiment 35 svdap
+Finished test 35 svdap with 4 rounds in 20.87389326095581 seconds
+Starting experiment 36 rr
+Finished test 36 rr with 3 rounds in 9.86687421798706 seconds
+Starting experiment 36 ldg
+Finished test 36 ldg with 10 rounds in 15.748110055923462 seconds
+Starting experiment 36 svdap
+Finished test 36 svdap with 6 rounds in 17.4498291015625 seconds
+Starting experiment 37 rr
+Finished test 37 rr with 4 rounds in 9.012280225753784 seconds
+Starting experiment 37 ldg
+Finished test 37 ldg with 10 rounds in 22.623323917388916 seconds
+Starting experiment 37 svdap
+Finished test 37 svdap with 6 rounds in 17.185245037078857 seconds
+Starting experiment 38 rr
+Finished test 38 rr with 8 rounds in 19.730255365371704 seconds
+Starting experiment 38 ldg
+Finished test 38 ldg with 7 rounds in 11.69172978401184 seconds
+Starting experiment 38 svdap
+Finished test 38 svdap with 9 rounds in 15.612029552459717 seconds
+Starting experiment 39 rr
+Finished test 39 rr with 4 rounds in 20.643285751342773 seconds
+Starting experiment 39 ldg
+Finished test 39 ldg with 9 rounds in 12.61634874343872 seconds
+Starting experiment 39 svdap
+Finished test 39 svdap with 12 rounds in 31.91328525543213 seconds
+Starting experiment 40 rr
+Finished test 40 rr with 9 rounds in 28.26058840751648 seconds
+Starting experiment 40 ldg
+Finished test 40 ldg with 8 rounds in 15.960754632949829 seconds
+Starting experiment 40 svdap
+Finished test 40 svdap with 16 rounds in 32.14868140220642 seconds
+Starting experiment 41 rr
+Finished test 41 rr with 10 rounds in 27.371089220046997 seconds
+Starting experiment 41 ldg
+Finished test 41 ldg with 11 rounds in 19.0241858959198 seconds
+Starting experiment 41 svdap
+Finished test 41 svdap with 9 rounds in 37.917487382888794 seconds
+Starting experiment 42 rr
+Finished test 42 rr with 3 rounds in 22.939764738082886 seconds
+Starting experiment 42 ldg
+Finished test 42 ldg with 11 rounds in 15.178802013397217 seconds
+Starting experiment 42 svdap
+Finished test 42 svdap with 7 rounds in 23.125407934188843 seconds
+Starting experiment 43 rr
+Finished test 43 rr with 9 rounds in 31.794779062271118 seconds
+Starting experiment 43 ldg
+Finished test 43 ldg with 10 rounds in 15.947974681854248 seconds
+Starting experiment 43 svdap
+Finished test 43 svdap with 5 rounds in 11.707637548446655 seconds
+Starting experiment 44 rr
+Finished test 44 rr with 10 rounds in 29.123032093048096 seconds
+Starting experiment 44 ldg
+Finished test 44 ldg with 14 rounds in 24.987715482711792 seconds
+Starting experiment 44 svdap
+Finished test 44 svdap with 11 rounds in 32.062405824661255 seconds
+Starting experiment 45 rr
+Finished test 45 rr with 7 rounds in 22.215599298477173 seconds
+Starting experiment 45 ldg
+Finished test 45 ldg with 7 rounds in 29.80929684638977 seconds
+Starting experiment 45 svdap
+Finished test 45 svdap with 6 rounds in 20.707545518875122 seconds
+Starting experiment 46 rr
+Finished test 46 rr with 11 rounds in 25.855902671813965 seconds
+Starting experiment 46 ldg
+Finished test 46 ldg with 8 rounds in 25.145024061203003 seconds
+Starting experiment 46 svdap
+Finished test 46 svdap with 7 rounds in 12.021188974380493 seconds
+Starting experiment 47 rr
+Finished test 47 rr with 10 rounds in 17.704641342163086 seconds
+Starting experiment 47 ldg
+Finished test 47 ldg with 13 rounds in 22.25584578514099 seconds
+Starting experiment 47 svdap
+Finished test 47 svdap with 10 rounds in 28.429741621017456 seconds
+Starting experiment 48 rr
+Finished test 48 rr with 6 rounds in 29.792361974716187 seconds
+Starting experiment 48 ldg
+Finished test 48 ldg with 8 rounds in 20.72450351715088 seconds
+Starting experiment 48 svdap
+Finished test 48 svdap with 10 rounds in 28.90895438194275 seconds
+Starting experiment 49 rr
+Finished test 49 rr with 5 rounds in 24.553214073181152 seconds
+Starting experiment 49 ldg
+Finished test 49 ldg with 10 rounds in 17.046189308166504 seconds
+Starting experiment 49 svdap
+Finished test 49 svdap with 9 rounds in 28.22082829475403 seconds
+******************************
+ENCODE ALGORITHM: rr
+------------------------------
+Avg Test Time 23836.975617408752
+Avg number of round 9.76
+Avg Msgs Sent 39.44
+Avg Lost by Owner 25.44
+Avg messages saved 0.0
+******************************
+ENCODE ALGORITHM: ldg
+------------------------------
+Avg Test Time 22970.223292708397
+Avg number of round 10.895833333333334
+Avg Msgs Sent 38.75
+Avg Lost by Owner 28.3125
+Avg messages saved 3.5625
+******************************
+ENCODE ALGORITHM: svdap
+------------------------------
+Avg Test Time 29247.17701435089
+Avg number of round 9.68
+Avg Msgs Sent 43.84
+Avg Lost by Owner 29.84
+Avg messages saved 0.0
+******************************
+Creating graph...
+Pickling data...
+Testing complete.

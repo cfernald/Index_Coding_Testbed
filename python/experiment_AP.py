@@ -10,6 +10,7 @@ import messages
 from time import sleep,time
 import matplotlib.pyplot as plt
 import pickle
+import statistics
 from copy import deepcopy
 
 # Static Variables
@@ -17,15 +18,28 @@ nodes = sys.argv[1].split()
 log_dir = sys.argv[2]
 nodes = list(map(int, nodes))
 nodes.sort()
+
+# Networking
 PORT = 5000
 MY_IP = '10.42.0.1'
-MSG_LEN = 40000
+# Dataset
+MSG_LEN = 50000
 NUM_TESTS = 50
-CLEAN_DATA = False
+# Data cleaning 
+CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
-ENCODE_ALGOS = ["rr", "ldg"]
+# Timeouts
+ROUNDS_TIMEOUT = 100
+# Aglorithms used 
+# "rr" = Round Robin
+# "ldg" = least difference geedy
+# "svdap" = SVD Alternating Projection)
+ENCODE_ALGOS = ["rr", "ldg", "svdap"]
+# Sleep times
+SLEEP_BROADCASTS = 0.01
+SLEEP_TESTS = 1.0
 
-
+# Code for expriments starts here
 print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGOS)
 
 # setup the ack listener
@@ -35,16 +49,17 @@ acks = ack_handler.AckListener(len(nodes))
 def signal_handler(signal, frame):
     print("\nShutting down...\n")
     acks.stop()
+    sys.stdout.flush()
     sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
 # start ack listener
 acks.start()
 
-# initial round
+# Setup the udp broadcaster
 broadcaster = udp.UdpBroadcaster(MY_IP)
 
-# generate messages
+# generate messages, 1 per nodes right now
 msgs = messages.gen_messages(len(nodes), MSG_LEN)
 
 # set up stats
@@ -57,6 +72,8 @@ lost_by_owner_msgs = []
 encode_time = []
 msgs_sent = []
 msgs_saved = []
+msg_correlations = []
+loss_avg = []
 for algo_index in range(num_algos):
     tests.append([])
     rounds.append([])
@@ -66,11 +83,14 @@ for algo_index in range(num_algos):
     encode_time.append([])
     msgs_sent.append([])
     msgs_saved.append([])
+    msg_correlations.append([])
+    loss_avg.append([])
 
 for test in range(NUM_TESTS):
     for algo_index in range(num_algos):
         algo = ENCODE_ALGOS[algo_index]
         print("Starting experiment", test, algo)
+        sys.stdout.flush()
         rnd = 0
         lost = 0
         lost_by_owner = 0
@@ -79,12 +99,15 @@ for test in range(NUM_TESTS):
         sent = 0
         test_start = time()
         rank_diff = 0
+        msg_correlation = 0
+        loss = 0
     
         # first round is always round robin
         tid = ((test * num_algos) + algo_index) % 128
         toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo="rr")
+        failed = False
 
-        while (len(toSend) > 0):
+        while (len(toSend) > 0 and not failed):
             rnd += 1
 
             #if (rnd > 20):
@@ -92,48 +115,78 @@ for test in range(NUM_TESTS):
 
             for message in toSend:
                 broadcaster.send(message, PORT)
-                sleep(0.01)
+                sleep(SLEEP_BROADCASTS)
                 sent += 1
 
             sleep(0.25)
             for i in range(len(nodes)):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
+
+            # calculate loss data
+            if rnd == 1:
+                received = deepcopy(acks.acks)
+                for i in range(len(received)):
+                    for j in range(len(received)):
+                        if received[i][j] == 2:
+                            received[i][j] = 1
+                        else:
+                            received[i][j] = 0
+
+                col_avgs = []
+                for i in range(len(nodes)):
+                   col_avgs.append(sum(received[i][j] for j in range(len(received))) / len(received))
+                
+                loss = 1 - sum(col_avgs)/len(col_avgs)
+                msg_correlation = statistics.variance(col_avgs)
+
             
-            base_line = algorithms.reduceMessages(msgs, acks.acks, 0, algo="rr")
+            # calculate the rank RR would produce
+            base_rank = 0
+            for i in range(len(acks.acks)):
+                if acks.acks[i][i] == 1:
+                    base_rank += 1
+
             toSend = algorithms.reduceMessages(msgs, acks.acks, tid, algo=algo)
 
-            rank_diff += len(base_line) - len(toSend)
+            rank_diff += base_rank - len(toSend)
+            if rank_diff < 0:
+                print("WARNING: Sending out too many messages. RR:", base_rank,algo,len(toSend))
+            if rnd > ROUNDS_TIMEOUT:
+                failed = True
 
         test_stop = time()
 
         print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds")
 
-        sleep(1)
+        sleep(SLEEP_TESTS)
         acks.reset()
 
-        msgs_saved[algo_index].append(rank_diff)
-        tests[algo_index].append(test)
-        rounds[algo_index].append(rnd)
-        test_time[algo_index].append((test_stop - test_start) * 1000)
-        lost_msgs[algo_index].append(lost)
-        lost_by_owner_msgs[algo_index].append(lost_by_owner)
-        msgs_sent[algo_index].append(sent)
-        #avg_encode_time[algo_index].append(encode_time/encodings)
+        if not failed:
+            msgs_saved[algo_index].append(rank_diff)
+            tests[algo_index].append(test)
+            rounds[algo_index].append(rnd)
+            test_time[algo_index].append((test_stop - test_start) * 1000)
+            lost_msgs[algo_index].append(lost)
+            lost_by_owner_msgs[algo_index].append(lost_by_owner)
+            msgs_sent[algo_index].append(sent)
+            msg_correlations[algo_index].append(msg_correlation)
+            loss_avg[algo_index].append(loss)
+            #avg_encode_time[algo_index].append(encode_time/encodings)
+        else:
+            print("Experiment timed out")
 
 acks.stop()
-
-print(tests)
 
 for algo_index in range(num_algos):
 
     algo = ENCODE_ALGOS[algo_index]
     print("******************************")
-    print("ENCODE ALGORITHM", algo)
+    print("ENCODE ALGORITHM:", algo)
 
     if CLEAN_DATA:
         time_avg = sum(test_time)/len(test_time)
-        print("Cleaning data...")
+        #print("Cleaning data...")
         i = 0
         removed = 0
         while (i < len(test_time)):
@@ -160,6 +213,8 @@ for algo_index in range(num_algos):
     print("Avg Msgs Sent", (sum(msgs_sent[algo_index])/len(msgs_sent[algo_index])))
     print("Avg Lost by Owner", (sum(lost_by_owner_msgs[algo_index])/len(lost_by_owner_msgs[algo_index])))
     print("Avg messages saved", (sum(msgs_saved[algo_index])/len(msgs_saved[algo_index])))
+    print("Avg loss probability", (sum(loss_avg[algo_index])/len(loss_avg[algo_index])))
+    print("Avg message loss correlation", (sum(msg_correlations[algo_index])/len(msg_correlations[algo_index])))
 
 
     plt.plot(test_time[algo_index])
@@ -179,7 +234,7 @@ for algo_index in range(num_algos):
 print("******************************")
 print("Creating graph...")
 
-colors = ['r', 'g', 'b']
+colors = ['red', 'green', 'blue', 'black', 'yellow']
 plt.figure(1)
 for algo_index in range(num_algos):
     plt.plot(tests[algo_index], msgs_sent[algo_index], colors[algo_index], label=ENCODE_ALGOS[algo_index])
@@ -197,4 +252,5 @@ pickleInfo = {"Rounds":rounds, "Algos":ENCODE_ALGOS, "Test Times":test_time, "Ms
 pickle.dump(pickleInfo, open("{}/results.pkl".format(log_dir),"wb"))
 
 print("Testing complete.")
+sys.stdout.flush()
 
