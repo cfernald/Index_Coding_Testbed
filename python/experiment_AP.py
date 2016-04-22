@@ -23,8 +23,8 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 25000
-NUM_TESTS = 25
+MSG_LEN = 50000
+NUM_TESTS = 10
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
@@ -33,11 +33,13 @@ ROUNDS_TIMEOUT = 100
 # Aglorithms used 
 # "rr" = Round Robin
 # "ldg" = least difference geedy
-# "svdap" = SVD Alternating Projection)
-ENCODE_ALGOS = ["rr", "svdap"]
+# "svdap" = SVD alternating projection
+ENCODE_ALGOS = ["rr", "ldg", "svdap"]
 # Sleep times
 SLEEP_BROADCASTS = 0.01
 SLEEP_TESTS = 1.0
+# save acks for debugging
+SAVE_ACKS = True
 
 # Code for expriments starts here
 print("Starting experiment with nodes: ", nodes, "using", ENCODE_ALGOS)
@@ -74,6 +76,7 @@ msgs_sent = []
 msgs_saved = []
 msg_correlations = []
 loss_avg = []
+saved_acks = []
 for algo_index in range(num_algos):
     tests.append([])
     rounds.append([])
@@ -145,6 +148,9 @@ for test in range(NUM_TESTS):
                 loss = 1 - sum(col_avgs)/len(col_avgs)
                 msg_correlation = sum(col_vars)/len(col_vars)
 
+                if SAVE_ACKS:
+                    saved_acks.append(deepcopy(acks.acks))
+
             
             # calculate the rank RR would produce
             base_rank = 0
@@ -166,7 +172,7 @@ for test in range(NUM_TESTS):
 
         test_stop = time()
 
-        print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds")
+        print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds with loss prob:", loss , "correlation:", msg_correlation)
 
         sleep(SLEEP_TESTS)
         acks.reset()
@@ -257,8 +263,14 @@ plt.savefig('{}/messages.png'.format(log_dir))
 plt.close()
 
 print("Pickling data...")
-pickleInfo = {"Rounds":rounds, "Algos":ENCODE_ALGOS, "Test Times":test_time, "Msgs Sent":msgs_sent, "Msgs Lost":lost_msgs,"Msgs Lost by Owner":lost_by_owner_msgs}
+pickleInfo = {"Rounds":rounds, "Algos":ENCODE_ALGOS, "Test Times":test_time, "Msgs Sent":msgs_sent, "Msgs Lost":lost_msgs,"Msgs Lost by Owner":lost_by_owner_msgs,"Correlation":msg_correlations,"Loss":loss_avg}
+
 pickle.dump(pickleInfo, open("{}/results.pkl".format(log_dir),"wb"))
+
+if SAVE_ACKS:
+    print("Pickling", len(saved_acks), "inital acks...")    
+    pickle.dump(saved_acks, open("{}/acks.pkl".format(log_dir),"wb"))
+
 
 print("Testing complete.")
 sys.stdout.flush()

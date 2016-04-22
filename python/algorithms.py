@@ -431,7 +431,7 @@ def testGauss():
     '''
 
     A = np.array([[1,0,0,0,0,0], [0,1,0,0,0,0], [0,0,1,0,0,0], [112314,0,9991,0,0,0], [1123,9891,0,0,0,0], [91,71,81,0,0,1]])
-    print A, "\n", decoding.gauss(A)[0],"\n"
+    print(A, "\n", decoding.gauss(A)[0],"\n")
 
 
 #testGauss()
