@@ -1,0 +1,4 @@
+{"test_dicts":[{"algo_name":"rr","message_length":"1", "num_rounds":"1"},
+               {"algo_name":"ldg","message_length":"2","num_rounds":"2"},
+               {"algo_name":"ldg","message_length":"3", "num_rounds":"3"}]
+}
