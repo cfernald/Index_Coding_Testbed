@@ -3,11 +3,10 @@ import algorithms
 import encoding, decoding
 from math import log
 
-DEFAULT_COEFF_SIZE = 50
-
 TEST_INDEX = 0
 COUNT_INDEX = 1
-COEFFS_INDEX = 2
+COEFFS_SIZE_INDEX = 2
+COEFFS_INDEX = 3
 
 def gen_messages(num, length):
     'This method generates random data to act as a message'
@@ -38,13 +37,15 @@ def get_test(msg):
     return msg[TEST_INDEX]
 
 
-def get_data(msg, coeff_size=DEFAULT_COEFF_SIZE):
+def get_data(msg):
     num = msg[COUNT_INDEX]
+    coeff_size = msg[COEFFS_SIZE_INDEX]
     return msg[COEFFS_INDEX + num + (num * coeff_size):]
 
 
-def get_coeffs(msg, num_nodes, coeff_size=DEFAULT_COEFF_SIZE):
+def get_coeffs(msg, num_nodes):
     num = msg[COUNT_INDEX]
+    coeff_size = msg[COEFFS_SIZE_INDEX]
     coeffs = [0] * num_nodes
     
     for i in range(num):
@@ -53,15 +54,19 @@ def get_coeffs(msg, num_nodes, coeff_size=DEFAULT_COEFF_SIZE):
         coeff_index_end = coeff_index + coeff_size
 
         msg_id = msg[id_index]
-        coeff = int.from_bytes(msg[coeff_index : coeff_index_end], byteorder='big', signed=True)
+        if coeff_size > 0:
+            coeff = int.from_bytes(msg[coeff_index : coeff_index_end], byteorder='big', signed=True)
+        else:
+            coeff = 1
+
         coeffs[msg_id] = coeff
         
     return coeffs
 
 
 'This is passed a row from the processed matrix to generate that message'
-def encode_row(row, msgs, tid, coeff_size=DEFAULT_COEFF_SIZE):
-    header = [tid, 0]
+def encode_row(row, msgs, tid, coeff_size):
+    header = [tid, 0, coeff_size]
     msg = encoding.EncodedMessage(0, rawEncoding=True)
     mod_factor = ((2**(coeff_size * 8)) // 2) - 1;
 
@@ -71,14 +76,18 @@ def encode_row(row, msgs, tid, coeff_size=DEFAULT_COEFF_SIZE):
             header[COUNT_INDEX] += 1
             header.append(i)
             
-            if abs(row[i]) >= mod_factor:
+            if abs(row[i]) >= mod_factor and coeff_size > 0:
                 negative = row[i] < 0
                 #print("WARNING: We went outside of our encoding range. coeff:", row[i])
                 row[i] = row[i] % mod_factor
                 if negative:
                     row[i] *= -1
-
-            header.extend(row[i].to_bytes(coeff_size, byteorder='big', signed=True))
+            
+            if coeff_size > 0: 
+                header.extend(row[i].to_bytes(coeff_size, byteorder='big', signed=True))
+            else:
+                assert row[i] == 1
+            
             msg = msg + (encoding.EncodedMessage(msgs[i]) * row[i])
     
     if header[COUNT_INDEX] > 0:
