@@ -1,10 +1,14 @@
 __author__ = 'ryan'
 
 from encoding import EncodedMessage
-import time
+import time, errno
+import copy
+
+TIMEOUT = 10.0
 
 # adapted from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
-def gauss(A, decodingSteps):
+def gauss(A, decodingSteps=None):
+    A = copy.deepcopy(A)
     num_rows = len(A) # rows
     num_cols = len(A[0]) # columns
 
@@ -15,12 +19,15 @@ def gauss(A, decodingSteps):
     #deoodingSteps will store the linear combination of the encoded messages needed to get to the state of a row of A
     #in a particular row of decodingSteps, the first entry represents the coefficient for the first encoded message,
     #the second entry for the second message, and so forth
-    '''decodingSteps = []
-    for k in range(0, num_rows):
-        decodingSteps.append([0]*num_rows)
-        decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
-'''
+    
+    if decodingSteps == None:
+        decodingSteps = []
+        for k in range(0, num_rows):
+            decodingSteps.append([0]*num_rows)
+            decodingSteps[k][k] = 1 # initialize the diagonal to 1s because you start with just one of each of the encoded messages in A
+
     # for each row i forwards
+    start_time = time.time()
     for i in range(0, num_rows):
         # Search for maximum in this column
         maxEl = abs(A[i][i])
@@ -49,6 +56,8 @@ def gauss(A, decodingSteps):
         # Make all rows below this one 0 in current column
         curRowMult = A[i][i] # doesn't change for the rows below
         for k in range(i+1, num_rows):
+            if time.time() - start_time > TIMEOUT:
+                raise TimeoutError("Gauss took too long")
             pivotMult = A[k][i]
 
             # don't reduce this row if it is already reduced
@@ -65,6 +74,7 @@ def gauss(A, decodingSteps):
             for j in range(0, num_rows):
                 decodingSteps[k][j] = decodingSteps[k][j]*curRowMult  -  decodingSteps[i][j]*pivotMult
 
+    zeroedRow = []
     # reducing on the way up is slightly different, because though we want to go row by row, we want to eliminate the last column, and since
     # the matrix may not be square, we cannot use the same index variable for pivot row and column
     pivotCol = num_cols-1 # initialize this to the index of the last column
@@ -83,6 +93,8 @@ def gauss(A, decodingSteps):
         # Make all rows above this one 0 in current column
         curRowMult = A[i][pivotCol] # doesn't change for the rows above
         for k in range(i-1,-1,-1):
+            if time.time() - start_time > TIMEOUT:
+                raise TimeoutError("Gauss took too long")
             pivotMult = A[k][pivotCol]
 
             # don't reduce this row if it is already reduced
@@ -97,9 +109,27 @@ def gauss(A, decodingSteps):
             for j in range(num_rows-1, -1, -1):
                 decodingSteps[k][j] = decodingSteps[k][j]*curRowMult - decodingSteps[i][j]*pivotMult
 
+
         pivotCol = savePivotCol-1 # if we went left to find a non-zero entry, go back, and resume the normal up one left one progression
 
-    return A, decodingSteps
+
+    # if we zeroed out a row, we want to move it to the bottom at the end
+    for i in range(num_rows):
+        if all(int(n)==0 for n in A[i]):
+            zeroedRow.append(i)
+    retA = []
+    retSteps = []
+    for i in range(num_rows):
+        if i not in zeroedRow:
+            retA.append(A[i])
+            retSteps.append(decodingSteps[i])
+    zeroedRow.reverse()
+    for i in zeroedRow:
+        retA.append(A[i])
+        retSteps.append(decodingSteps[i])
+
+
+    return retA, retSteps
 
 # this just works with int/long (need to adapt for data structure)
 # and assumes only positive values
