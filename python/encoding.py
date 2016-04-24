@@ -1,6 +1,6 @@
 import random
 import time
-from math import log
+from math import log, ceil
 
 class EncodedMessage:
 	def __init__(self, message, rawEncoding=False, addMarker=True):
@@ -8,6 +8,8 @@ class EncodedMessage:
 			self.encoding = message
 		else:
 			self.encoding = self.fromBytes(message, addMarker)
+			if self.encoding < 0 :
+				print("WARNING: created a negative encoding")
 	
 	def __add__(self, other):
 		return EncodedMessage(self.encoding + other.encoding, rawEncoding=True)
@@ -48,8 +50,11 @@ class EncodedMessage:
 			return int.from_bytes(bytearray(bytes), byteorder='big', signed=False)
 
 	def toBytes(self, removeMarker = True):
-		num_bytes = int(log(abs(self.encoding), 256)) + 2
+		num_bytes = ceil(log(abs(self.encoding), 256))
+
 		if removeMarker:
+			if self.encoding < 0:
+				print("ERROR: Ended with negative messages representation")
 			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)[1:] # ignore the leading 1
 		else:
 			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
