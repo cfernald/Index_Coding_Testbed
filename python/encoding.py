@@ -1,6 +1,6 @@
 import random
 import time
-from math import log
+from math import log, ceil
 
 class EncodedMessage:
 	def __init__(self, message, rawEncoding=False, addMarker=True):
@@ -43,16 +43,22 @@ class EncodedMessage:
 	def fromBytes(self, bytes, addMarker = True):
 		# leading with a bytearray[1] to not chop off leading 0s
 		if addMarker:
-			return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=False)
+			return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=True)
 		else:
-			return int.from_bytes(bytearray(bytes), byteorder='big', signed=False)
+			return int.from_bytes(bytearray(bytes), byteorder='big', signed=True)
 
 	def toBytes(self, removeMarker = True):
-		num_bytes = int(log(abs(self.encoding), 256)) + 2
+		num_bytes = ceil(log(abs(self.encoding), 256))
+
 		if removeMarker:
+			if self.encoding < 0:
+				print("ERROR: Ended with negative messages representation")
 			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)[1:] # ignore the leading 1
 		else:
-			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
+			try:
+				return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
+			except OverflowError:
+				return self.encoding.to_bytes(num_bytes + 1, byteorder='big', signed=True)
 
 
 '''

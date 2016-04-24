@@ -23,8 +23,8 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 50000
-NUM_TESTS = 10
+MSG_LEN = 10000
+NUM_TESTS = 25
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
@@ -34,7 +34,7 @@ ROUNDS_TIMEOUT = 100
 # "rr" = Round Robin
 # "ldg" = least difference geedy
 # "svdap" = SVD alternating projection
-ENCODE_ALGOS = ["rr", "ldg", "svdap"]
+ENCODE_ALGOS = ["ldg"]
 # Sleep times
 SLEEP_BROADCASTS = 0.01
 SLEEP_TESTS = 1.0
@@ -172,7 +172,7 @@ for test in range(NUM_TESTS):
 
         test_stop = time()
 
-        print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds with loss prob:", loss , "correlation:", msg_correlation)
+        print("Finished test", test, algo, "with", rnd, "rounds in", (test_stop - test_start), "seconds with loss prob:", loss , "correlation:", msg_correlation, "msgs saved:", rank_diff, "tid:", tid)
 
         sleep(SLEEP_TESTS)
         acks.reset()

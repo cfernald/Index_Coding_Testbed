@@ -20,18 +20,31 @@ print("Started node at node", me, " with", num_nodes, "total nodes")
 
 while True:
     # Get a message
-    msg = bytearray(rec.rec(1024))
+    msg = bytearray(rec.rec(100000))
     tid = messages.get_test(msg)
     coeffs = messages.get_coeffs(msg, num_nodes)
     data = messages.get_data(msg)
 
     if (tid != last_tid):
-        print("New test... Reseting.")
+        print("New test... Reseting.\nTID:", tid)
         sys.stdout.flush()
         decoder.reset()
         last_tid = tid
 
-    new_decoded = decoder.addMessage(coeffs, data)
+    new_decoded = []
+    if not decoder.can_decode(me):
+        new_decoded = decoder.addMessage(coeffs, data)
+
+    if me in new_decoded:
+        decoded = decoder.decode_message(me)
+        size = len(decoded)
+        should_be = messages.gen_data(me, size)
+        if decoded == should_be:
+            print ("Correctly decoded message")
+        else:
+            print ("ERROR: incorrect decoding \nExpected len:", len(should_be), "\nFound:", len(decoded))
+            print ("Expected message:", should_be, "\nfound:",decoded)
+        sys.stdout.flush()
 
     # make sure the AP knows we can decode
     if coeffs[me] != 0 and decoder.can_decode(me):
@@ -39,4 +52,5 @@ while True:
 
     for decoded in new_decoded:
         ack_sender.ack(me, decoded)
+
 

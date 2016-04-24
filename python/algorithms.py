@@ -12,6 +12,7 @@ import sys
 DONT_CARE = -42
 def reduceMessages(msgs, acks, tid, algo="rr"):
     new_messages = []
+    coeff_size = 0
     
     #print(acks)
 
@@ -21,6 +22,7 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
         elif algo == "ldg":
             result = LDG(acks)
         elif algo == "svdap":
+            coeff_size = 50
             result = SVDAP_proxy(acks)
         else:
             print("ERROR: Unknown encoding algorithm")
@@ -29,7 +31,7 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
         result=[]
 
     for i in range(len(result)):
-        msg = messages.encode_row(result[i], msgs, tid)
+        msg = messages.encode_row(result[i], msgs, tid, coeff_size=coeff_size)
         if msg != None:
             new_messages.append(msg)
 

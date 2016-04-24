@@ -112,7 +112,7 @@ def gauss(A, decodingSteps=None):
 
         pivotCol = savePivotCol-1 # if we went left to find a non-zero entry, go back, and resume the normal up one left one progression
 
-
+    '''
     # if we zeroed out a row, we want to move it to the bottom at the end
     for i in range(num_rows):
         if all(int(n)==0 for n in A[i]):
@@ -127,9 +127,9 @@ def gauss(A, decodingSteps=None):
     for i in zeroedRow:
         retA.append(A[i])
         retSteps.append(decodingSteps[i])
+    '''
 
-
-    return retA, retSteps
+    return A, decodingSteps
 
 # this just works with int/long (need to adapt for data structure)
 # and assumes only positive values

@@ -1,4 +1,4 @@
-import decoding, encoding
+import decoding, encoding, messages
 
 class DecodeManager:
     'Handles the state info for decoding and runs decoding'
@@ -40,7 +40,6 @@ class DecodeManager:
 
         return msg.toBytes()
 
-
     def direct_decode(self, coeffs, steps):
         # decode what we can first
         for msgId in range(len(coeffs)):
@@ -58,8 +57,11 @@ class DecodeManager:
                         coeffs[msgId] = 0
                         
                     # update the steps list
-                    for i in range(len(steps_msgId)):
-                        steps[i] = (steps[i] * div) - (num_msgId * steps_msgId[i])
+                    for i in range(len(steps)):
+                        if i < len(steps_msgId):
+                            steps[i] = (steps[i] * div) - (num_msgId * steps_msgId[i])
+                        else:
+                            steps[i] = steps[i] * div
 
         return coeffs, steps
 
@@ -123,7 +125,8 @@ class DecodeManager:
             if node != 0:
                 num_coeffs += 1
 
-        if num_coeffs > 1:    
+        if num_coeffs > 1:
+                
             # Add new coeffs row
             self.coeffs.append(nodes)
 
@@ -209,6 +212,52 @@ def test():
     l = dh.addMessage([1,0,0], m1.toBytes(removeMarker=False))
     assert dh.decode_message(1) == m2.toBytes()
     assert dh.decode_message(0) == m1.toBytes()
+
+    # litle encoding test
+    num = -91287398123987123712398123
+    encoded = encoding.EncodedMessage(num, rawEncoding=True)
+    byte_thing = encoded.toBytes(removeMarker=False)
+    num2 = encoding.EncodedMessage(byte_thing, addMarker=False).encoding
+    assert num == num2
+
+
+    # robust testing
+    decoder = DecodeManager(10)
+    msgs = messages.gen_messages(10, 500)
+
+    for experiment in range(1):
+        decoder.reset()
+        for msg in range(7):
+            row = [0] * msg
+            row.append(1)
+            row.extend([0] * (10 - msg - 1))
+
+            to_send = messages.encode_row(row, msgs, 1, 0)
+            row = messages.get_coeffs(to_send, 10)
+            l = decoder.addMessage(row, messages.get_data(to_send))
+            assert l == [msg]
+ 
+        row = [0, 1, 1, 1, 1, 0, 0, 0, 0, 0]
+        to_send = messages.encode_row(row, msgs, 1, 0)
+        row = messages.get_coeffs(to_send, 10)
+        l = decoder.addMessage(row, messages.get_data(to_send))
+ 
+        row = [0, 1, 0, 0, 1, 0, 0, 1, 1, 0]
+        to_send = messages.encode_row(row, msgs, 1, 0)
+        row = messages.get_coeffs(to_send, 10)
+        l = decoder.addMessage(row, messages.get_data(to_send))
+        
+
+        row = [0, -1, 0, 0, 0, 0, 0, 0, 0, -1]
+        to_send = messages.encode_row(row, msgs, 1, 10)
+        row_orig = row
+        row = messages.get_coeffs(to_send, 10)
+        assert row_orig == row
+
+        l = decoder.addMessage(row, messages.get_data(to_send))
+        
+        assert l == [9]
+        assert decoder.decode_message(9) == msgs[9]
     
     print("Test passed")
 
