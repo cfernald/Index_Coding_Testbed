@@ -8,8 +8,6 @@ class EncodedMessage:
 			self.encoding = message
 		else:
 			self.encoding = self.fromBytes(message, addMarker)
-			if self.encoding < 0 :
-				print("WARNING: created a negative encoding")
 	
 	def __add__(self, other):
 		return EncodedMessage(self.encoding + other.encoding, rawEncoding=True)
@@ -45,9 +43,9 @@ class EncodedMessage:
 	def fromBytes(self, bytes, addMarker = True):
 		# leading with a bytearray[1] to not chop off leading 0s
 		if addMarker:
-			return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=False)
+			return int.from_bytes(bytearray([1]) + bytes, byteorder='big', signed=True)
 		else:
-			return int.from_bytes(bytearray(bytes), byteorder='big', signed=False)
+			return int.from_bytes(bytearray(bytes), byteorder='big', signed=True)
 
 	def toBytes(self, removeMarker = True):
 		num_bytes = ceil(log(abs(self.encoding), 256))
@@ -57,7 +55,10 @@ class EncodedMessage:
 				print("ERROR: Ended with negative messages representation")
 			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)[1:] # ignore the leading 1
 		else:
-			return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
+			try:
+				return self.encoding.to_bytes(num_bytes, byteorder='big', signed=True)
+			except OverflowError:
+				return self.encoding.to_bytes(num_bytes + 1, byteorder='big', signed=True)
 
 
 '''

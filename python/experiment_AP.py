@@ -24,7 +24,7 @@ PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
 MSG_LEN = 10000
-NUM_TESTS = 15
+NUM_TESTS = 25
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3

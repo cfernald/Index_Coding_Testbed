@@ -40,7 +40,6 @@ class DecodeManager:
 
         return msg.toBytes()
 
-
     def direct_decode(self, coeffs, steps):
         # decode what we can first
         for msgId in range(len(coeffs)):
@@ -214,11 +213,19 @@ def test():
     assert dh.decode_message(1) == m2.toBytes()
     assert dh.decode_message(0) == m1.toBytes()
 
+    # litle encoding test
+    num = -91287398123987123712398123
+    encoded = encoding.EncodedMessage(num, rawEncoding=True)
+    byte_thing = encoded.toBytes(removeMarker=False)
+    num2 = encoding.EncodedMessage(byte_thing, addMarker=False).encoding
+    assert num == num2
+
+
     # robust testing
     decoder = DecodeManager(10)
-    msgs = messages.gen_messages(10, 50000)
+    msgs = messages.gen_messages(10, 500)
 
-    for experiment in range(10):
+    for experiment in range(1):
         decoder.reset()
         for msg in range(7):
             row = [0] * msg
@@ -241,9 +248,12 @@ def test():
         l = decoder.addMessage(row, messages.get_data(to_send))
         
 
-        row = [0, 1, 0, 0, 0, 0, 0, 0, 0, 1]
-        to_send = messages.encode_row(row, msgs, 1, 0)
+        row = [0, -1, 0, 0, 0, 0, 0, 0, 0, -1]
+        to_send = messages.encode_row(row, msgs, 1, 10)
+        row_orig = row
         row = messages.get_coeffs(to_send, 10)
+        assert row_orig == row
+
         l = decoder.addMessage(row, messages.get_data(to_send))
         
         assert l == [9]
