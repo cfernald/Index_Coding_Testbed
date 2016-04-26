@@ -1,0 +1,116 @@
+Starting experiment with nodes:  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] using ['ldg']
+Starting experiment 0 ldg
+Finished test 0 ldg with 2 rounds in 0.5938124656677246 seconds with loss prob: 0.621301775147929 correlation: 0.18047337278106507 msgs saved: 1 tid: 0
+Starting experiment 1 ldg
+Finished test 1 ldg with 2 rounds in 0.5866265296936035 seconds with loss prob: 0.4674556213017751 correlation: 0.1952662721893491 msgs saved: 0 tid: 1
+Starting experiment 2 ldg
+Finished test 2 ldg with 2 rounds in 0.5944185256958008 seconds with loss prob: 0.5621301775147929 correlation: 0.1775147928994083 msgs saved: 0 tid: 2
+Starting experiment 3 ldg
+Finished test 3 ldg with 2 rounds in 0.594653844833374 seconds with loss prob: 0.4970414201183432 correlation: 0.1499013806706114 msgs saved: 1 tid: 3
+Starting experiment 4 ldg
+Finished test 4 ldg with 2 rounds in 0.5890774726867676 seconds with loss prob: 0.485207100591716 correlation: 0.1972386587771203 msgs saved: 0 tid: 4
+Starting experiment 5 ldg
+Finished test 5 ldg with 2 rounds in 0.5899491310119629 seconds with loss prob: 0.47337278106508873 correlation: 0.1854043392504931 msgs saved: 0 tid: 5
+Starting experiment 6 ldg
+Finished test 6 ldg with 2 rounds in 0.5879793167114258 seconds with loss prob: 0.5207100591715976 correlation: 0.20512820512820512 msgs saved: 0 tid: 6
+Starting experiment 7 ldg
+Finished test 7 ldg with 3 rounds in 0.8559105396270752 seconds with loss prob: 0.47928994082840237 correlation: 0.22287968441814596 msgs saved: 0 tid: 7
+Starting experiment 8 ldg
+Finished test 8 ldg with 1 rounds in 0.32987236976623535 seconds with loss prob: 0.5502958579881657 correlation: 0.17751479289940827 msgs saved: 0 tid: 8
+Starting experiment 9 ldg
+Finished test 9 ldg with 2 rounds in 0.5924434661865234 seconds with loss prob: 0.47928994082840237 correlation: 0.20315581854043396 msgs saved: 0 tid: 9
+Starting experiment 10 ldg
+Finished test 10 ldg with 3 rounds in 0.8537793159484863 seconds with loss prob: 0.47928994082840237 correlation: 0.18934911242603553 msgs saved: 0 tid: 10
+Starting experiment 11 ldg
+Finished test 11 ldg with 2 rounds in 0.5899689197540283 seconds with loss prob: 0.514792899408284 correlation: 0.20019723865877712 msgs saved: 0 tid: 11
+Starting experiment 12 ldg
+Finished test 12 ldg with 4 rounds in 1.1667628288269043 seconds with loss prob: 0.7100591715976332 correlation: 0.2031558185404339 msgs saved: 0 tid: 12
+Starting experiment 13 ldg
+Finished test 13 ldg with 3 rounds in 0.8457529544830322 seconds with loss prob: 0.4970414201183432 correlation: 0.19526627218934914 msgs saved: 0 tid: 13
+Starting experiment 14 ldg
+Finished test 14 ldg with 3 rounds in 0.8491487503051758 seconds with loss prob: 0.47337278106508873 correlation: 0.1873767258382643 msgs saved: 0 tid: 14
+Starting experiment 15 ldg
+Finished test 15 ldg with 2 rounds in 0.5988566875457764 seconds with loss prob: 0.47337278106508873 correlation: 0.17652859960552267 msgs saved: 1 tid: 15
+Starting experiment 16 ldg
+Finished test 16 ldg with 3 rounds in 0.8711323738098145 seconds with loss prob: 0.4674556213017751 correlation: 0.2307692307692308 msgs saved: 0 tid: 16
+Starting experiment 17 ldg
+Finished test 17 ldg with 2 rounds in 0.6026303768157959 seconds with loss prob: 0.47928994082840237 correlation: 0.20414201183431954 msgs saved: 2 tid: 17
+Starting experiment 18 ldg
+Finished test 18 ldg with 2 rounds in 0.5869839191436768 seconds with loss prob: 0.45562130177514804 correlation: 0.19329388560157787 msgs saved: 1 tid: 18
+Starting experiment 19 ldg
+Finished test 19 ldg with 3 rounds in 0.854132890701294 seconds with loss prob: 0.57396449704142 correlation: 0.20216962524654836 msgs saved: 1 tid: 19
+Starting experiment 20 ldg
+Finished test 20 ldg with 3 rounds in 0.8572006225585938 seconds with loss prob: 0.47928994082840237 correlation: 0.1962524654832347 msgs saved: 0 tid: 20
+Starting experiment 21 ldg
+Finished test 21 ldg with 4 rounds in 1.1278996467590332 seconds with loss prob: 0.49112426035502954 correlation: 0.21893491124260356 msgs saved: 0 tid: 21
+Starting experiment 22 ldg
+Finished test 22 ldg with 2 rounds in 0.5901062488555908 seconds with loss prob: 0.514792899408284 correlation: 0.20907297830374752 msgs saved: 0 tid: 22
+Starting experiment 23 ldg
+Finished test 23 ldg with 3 rounds in 0.8605482578277588 seconds with loss prob: 0.4674556213017751 correlation: 0.18244575936883628 msgs saved: 0 tid: 23
+Starting experiment 24 ldg
+Finished test 24 ldg with 2 rounds in 0.6135218143463135 seconds with loss prob: 0.6153846153846153 correlation: 0.22781065088757393 msgs saved: 0 tid: 24
+Starting experiment 25 ldg
+Finished test 25 ldg with 12 rounds in 3.209819793701172 seconds with loss prob: 0.6449704142011834 correlation: 0.16173570019723862 msgs saved: 0 tid: 25
+Starting experiment 26 ldg
+Finished test 26 ldg with 2 rounds in 0.5897250175476074 seconds with loss prob: 0.4970414201183432 correlation: 0.2011834319526627 msgs saved: 1 tid: 26
+Starting experiment 27 ldg
+Finished test 27 ldg with 2 rounds in 0.5952503681182861 seconds with loss prob: 0.5621301775147929 correlation: 0.21104536489151873 msgs saved: 0 tid: 27
+Starting experiment 28 ldg
+Finished test 28 ldg with 2 rounds in 0.5895390510559082 seconds with loss prob: 0.49112426035502965 correlation: 0.2011834319526627 msgs saved: 0 tid: 28
+Starting experiment 29 ldg
+Finished test 29 ldg with 3 rounds in 0.8580770492553711 seconds with loss prob: 0.47928994082840237 correlation: 0.2238658777120315 msgs saved: 1 tid: 29
+Starting experiment 30 ldg
+Finished test 30 ldg with 2 rounds in 0.5986447334289551 seconds with loss prob: 0.4970414201183433 correlation: 0.20611439842209076 msgs saved: 0 tid: 30
+Starting experiment 31 ldg
+Finished test 31 ldg with 2 rounds in 0.5904803276062012 seconds with loss prob: 0.4970414201183432 correlation: 0.18047337278106507 msgs saved: 1 tid: 31
+Starting experiment 32 ldg
+Finished test 32 ldg with 2 rounds in 0.5878703594207764 seconds with loss prob: 0.485207100591716 correlation: 0.1952662721893491 msgs saved: 1 tid: 32
+Starting experiment 33 ldg
+Finished test 33 ldg with 6 rounds in 1.6626427173614502 seconds with loss prob: 0.6035502958579881 correlation: 0.17258382642998027 msgs saved: 1 tid: 33
+Starting experiment 34 ldg
+Finished test 34 ldg with 5 rounds in 1.399515151977539 seconds with loss prob: 0.5088757396449703 correlation: 0.17357001972386588 msgs saved: 0 tid: 34
+Starting experiment 35 ldg
+Finished test 35 ldg with 2 rounds in 0.5908529758453369 seconds with loss prob: 0.4674556213017751 correlation: 0.1814595660749507 msgs saved: 0 tid: 35
+Starting experiment 36 ldg
+Finished test 36 ldg with 5 rounds in 1.368530511856079 seconds with loss prob: 0.5207100591715976 correlation: 0.1982248520710059 msgs saved: 1 tid: 36
+Starting experiment 37 ldg
+Finished test 37 ldg with 3 rounds in 0.8547170162200928 seconds with loss prob: 0.5207100591715976 correlation: 0.20512820512820512 msgs saved: 2 tid: 37
+Starting experiment 38 ldg
+Finished test 38 ldg with 4 rounds in 1.1246058940887451 seconds with loss prob: 0.5384615384615383 correlation: 0.23865877712031555 msgs saved: 0 tid: 38
+Starting experiment 39 ldg
+Finished test 39 ldg with 4 rounds in 1.1590070724487305 seconds with loss prob: 0.6745562130177514 correlation: 0.2199211045364891 msgs saved: 1 tid: 39
+Starting experiment 40 ldg
+Finished test 40 ldg with 4 rounds in 1.1197435855865479 seconds with loss prob: 0.5621301775147929 correlation: 0.18145956607495067 msgs saved: 0 tid: 40
+Starting experiment 41 ldg
+Finished test 41 ldg with 3 rounds in 0.883976936340332 seconds with loss prob: 0.7337278106508875 correlation: 0.20216962524654833 msgs saved: 0 tid: 41
+Starting experiment 42 ldg
+Finished test 42 ldg with 3 rounds in 0.8673079013824463 seconds with loss prob: 0.5325443786982249 correlation: 0.22583826429980275 msgs saved: 0 tid: 42
+Starting experiment 43 ldg
+Finished test 43 ldg with 3 rounds in 0.8893172740936279 seconds with loss prob: 0.6272189349112426 correlation: 0.23767258382642995 msgs saved: 1 tid: 43
+Starting experiment 44 ldg
+Finished test 44 ldg with 3 rounds in 0.85494065284729 seconds with loss prob: 0.4556213017751479 correlation: 0.1913214990138067 msgs saved: 0 tid: 44
+Starting experiment 45 ldg
+Finished test 45 ldg with 5 rounds in 1.4003691673278809 seconds with loss prob: 0.5502958579881657 correlation: 0.1854043392504931 msgs saved: 0 tid: 45
+Starting experiment 46 ldg
+Finished test 46 ldg with 3 rounds in 0.8598854541778564 seconds with loss prob: 0.5917159763313609 correlation: 0.16074950690335307 msgs saved: 0 tid: 46
+Starting experiment 47 ldg
+Finished test 47 ldg with 2 rounds in 0.6058077812194824 seconds with loss prob: 0.5207100591715976 correlation: 0.21104536489151873 msgs saved: 0 tid: 47
+Starting experiment 48 ldg
+Finished test 48 ldg with 2 rounds in 0.5958662033081055 seconds with loss prob: 0.49112426035502954 correlation: 0.1903353057199211 msgs saved: 0 tid: 48
+Starting experiment 49 ldg
+Finished test 49 ldg with 2 rounds in 0.5943775177001953 seconds with loss prob: 0.4970414201183432 correlation: 0.18343195266272191 msgs saved: 1 tid: 49
+******************************
+ENCODE ALGORITHM: ldg
+------------------------------
+Avg Test Time 844.6807956695557
+Avg number of round 2.94
+Avg Msgs Sent 17.28
+Avg Lost by Owner 4.66
+Avg messages saved 0.36
+Avg loss probability 0.5275739644970414
+Avg message loss correlation 0.19702169625246546
+******************************
+Creating graph...
+Pickling data...
+Pickling 50 inital acks...
+Testing complete.

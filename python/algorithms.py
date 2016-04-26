@@ -38,7 +38,7 @@ def reduceMessages(msgs, acks, tid, algo="rr"):
     return new_messages
 
 
-def SVDAP_proxy(acks_orig, desired_rank=0.75):
+def SVDAP_proxy(acks_orig, desired_rank=0.10):
     acks = copy.deepcopy(acks_orig)
     removed_nodes = []
     for i in range(len(acks)):
@@ -236,7 +236,7 @@ def thresholdRank(M, eig_size_tolerance=0.0001):
     return rank
     #versus #return np.linalg.matrix_rank(M)
 
-def SVDAP(sideInfoMatrix, targetRank, startSize=10, startingMatrix=None, eig_size_tolerance=0.0001, precisionDecimals=1, max_iterations=100, return_analysis=False):
+def SVDAP(sideInfoMatrix, targetRank, startSize=10, startingMatrix=None, eig_size_tolerance=0.0001, precisionDecimals=1, max_iterations=1000, return_analysis=False):
     debug = False
 
     # initialization
@@ -259,7 +259,7 @@ def SVDAP(sideInfoMatrix, targetRank, startSize=10, startingMatrix=None, eig_siz
     bestM = M # if somehow we got to a lower rank in the projection process, we don't want to throw it out in the next projection
     bestIteration = iteration = 0
 
-    while currentRank > targetRank and projectionDistance > eig_size_tolerance/(n**3) and iteration < max_iterations: #and CheckInf<n-currentRank+5: #, in matlab script
+    while currentRank > targetRank  and iteration < max_iterations: #and CheckInf<n-currentRank+5: #, in matlab script and projectionDistance > eig_size_tolerance/(n**3)
         iteration += 1
         U,s,V = np.linalg.svd(M) # note that V is returned as the transpose of what matlab would return
         S = np.diag(s)

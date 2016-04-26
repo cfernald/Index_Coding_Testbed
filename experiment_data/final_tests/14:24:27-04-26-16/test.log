@@ -1,0 +1,68 @@
+Starting experiment with nodes:  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] using ['rr', 'ldg']
+Starting experiment 0 rr
+Finished test 0 rr with 23 rounds in 1.343595266342163 seconds with loss prob: 0.9881656804733728 correlation: 0.010848126232741617 msgs saved: 0 tid: 0
+Starting experiment 0 ldg
+Finished test 0 ldg with 17 rounds in 1.0310771465301514 seconds with loss prob: 0.7514792899408285 correlation: 0.1341222879684418 msgs saved: 1 tid: 1
+Starting experiment 1 rr
+Finished test 1 rr with 18 rounds in 1.027360200881958 seconds with loss prob: 0.8875739644970414 correlation: 0.09763313609467453 msgs saved: 0 tid: 2
+Starting experiment 1 ldg
+Finished test 1 ldg with 39 rounds in 2.3109090328216553 seconds with loss prob: 0.7514792899408285 correlation: 0.09861932938856015 msgs saved: 1 tid: 3
+Starting experiment 2 rr
+Finished test 2 rr with 31 rounds in 1.7678472995758057 seconds with loss prob: 0.7751479289940828 correlation: 0.10946745562130178 msgs saved: 0 tid: 4
+Starting experiment 2 ldg
+Finished test 2 ldg with 5 rounds in 0.35909008979797363 seconds with loss prob: 0.9881656804733728 correlation: 0.010848126232741617 msgs saved: 0 tid: 5
+Starting experiment 3 rr
+Finished test 3 rr with 13 rounds in 0.8024575710296631 seconds with loss prob: 0.8224852071005917 correlation: 0.0759368836291913 msgs saved: 0 tid: 6
+Starting experiment 3 ldg
+Finished test 3 ldg with 10 rounds in 0.6432552337646484 seconds with loss prob: 0.8047337278106509 correlation: 0.10453648915187376 msgs saved: 0 tid: 7
+Starting experiment 4 rr
+Finished test 4 rr with 4 rounds in 0.2993028163909912 seconds with loss prob: 0.7810650887573964 correlation: 0.1104536489151874 msgs saved: 0 tid: 8
+Starting experiment 4 ldg
+Finished test 4 ldg with 3 rounds in 0.24044108390808105 seconds with loss prob: 0.7692307692307692 correlation: 0.11735700197238658 msgs saved: 1 tid: 9
+Starting experiment 5 rr
+Finished test 5 rr with 101 rounds in 5.640455007553101 seconds with loss prob: 0.7928994082840237 correlation: 0.12327416173570019 msgs saved: 0 tid: 10
+Experiment timed out
+Starting experiment 5 ldg
+Finished test 5 ldg with 6 rounds in 0.4569554328918457 seconds with loss prob: 1.0 correlation: 0.0 msgs saved: 0 tid: 11
+Starting experiment 6 rr
+Finished test 6 rr with 5 rounds in 0.3302617073059082 seconds with loss prob: 0.8816568047337279 correlation: 0.08481262327416174 msgs saved: 0 tid: 12
+Starting experiment 6 ldg
+Finished test 6 ldg with 18 rounds in 1.1437430381774902 seconds with loss prob: 0.8520710059171598 correlation: 0.07100591715976332 msgs saved: 0 tid: 13
+Starting experiment 7 rr
+Finished test 7 rr with 8 rounds in 0.5322592258453369 seconds with loss prob: 0.8461538461538461 correlation: 0.09072978303747535 msgs saved: 0 tid: 14
+Starting experiment 7 ldg
+Finished test 7 ldg with 3 rounds in 0.22716188430786133 seconds with loss prob: 0.834319526627219 correlation: 0.08086785009861933 msgs saved: 0 tid: 15
+Starting experiment 8 rr
+Finished test 8 rr with 101 rounds in 5.490307331085205 seconds with loss prob: 0.7751479289940828 correlation: 0.10355029585798815 msgs saved: 0 tid: 16
+Experiment timed out
+Starting experiment 8 ldg
+Finished test 8 ldg with 6 rounds in 0.41600823402404785 seconds with loss prob: 0.8816568047337278 correlation: 0.04832347140039449 msgs saved: 0 tid: 17
+Starting experiment 9 rr
+Finished test 9 rr with 14 rounds in 0.8487548828125 seconds with loss prob: 0.8165680473372781 correlation: 0.11439842209072978 msgs saved: 0 tid: 18
+Starting experiment 9 ldg
+Finished test 9 ldg with 10 rounds in 0.6392030715942383 seconds with loss prob: 0.7751479289940828 correlation: 0.12820512820512822 msgs saved: 0 tid: 19
+******************************
+ENCODE ALGORITHM: rr
+------------------------------
+Avg Test Time 868.9798712730408
+Avg number of round 14.5
+Avg Msgs Sent 50.0
+Avg Lost by Owner 37.125
+Avg messages saved 0.0
+Avg loss probability 0.8498520710059172
+Avg message loss correlation 0.08678500986193294
+******************************
+ENCODE ALGORITHM: ldg
+------------------------------
+Avg Test Time 746.7844247817993
+Avg number of round 11.7
+Avg Msgs Sent 45.3
+Avg Lost by Owner 32.6
+Avg messages saved 0.3
+Avg loss probability 0.8408284023668638
+Avg message loss correlation 0.07938856015779092
+******************************
+Creating graph...
+Pickling data...
+Pickling 20 inital acks...
+Testing complete.

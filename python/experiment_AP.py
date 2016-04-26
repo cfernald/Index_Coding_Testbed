@@ -23,8 +23,8 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 10000
-NUM_TESTS = 25
+MSG_LEN = 5120
+NUM_TESTS = 10
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
@@ -34,9 +34,9 @@ ROUNDS_TIMEOUT = 100
 # "rr" = Round Robin
 # "ldg" = least difference geedy
 # "svdap" = SVD alternating projection
-ENCODE_ALGOS = ["ldg"]
+ENCODE_ALGOS = ["rr", "ldg"]
 # Sleep times
-SLEEP_BROADCASTS = 0.01
+SLEEP_BROADCASTS = 0.002
 SLEEP_TESTS = 1.0
 # save acks for debugging
 SAVE_ACKS = True
@@ -104,6 +104,7 @@ for test in range(NUM_TESTS):
         rank_diff = 0
         msg_correlation = 0
         loss = 0
+        saved_acks.append([])
     
         # first round is always round robin
         tid = ((test * num_algos) + algo_index) % 128
@@ -121,7 +122,7 @@ for test in range(NUM_TESTS):
                 sleep(SLEEP_BROADCASTS)
                 sent += 1
 
-            sleep(0.25)
+            sleep(0.05)
             for i in range(len(nodes)):
                 if (acks.acks[i][i] == 1):
                     lost_by_owner += 1
@@ -148,8 +149,8 @@ for test in range(NUM_TESTS):
                 loss = 1 - sum(col_avgs)/len(col_avgs)
                 msg_correlation = sum(col_vars)/len(col_vars)
 
-                if SAVE_ACKS:
-                    saved_acks.append(deepcopy(acks.acks))
+                
+            saved_acks[-1].append(deepcopy(acks.acks))
 
             
             # calculate the rank RR would produce
