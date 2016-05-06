@@ -23,8 +23,8 @@ nodes.sort()
 PORT = 5000
 MY_IP = '10.42.0.1'
 # Dataset
-MSG_LEN = 5000
-NUM_TESTS = 1000000
+MSG_LEN = 50000
+NUM_TESTS = 10
 # Data cleaning 
 CLEAN_DATA = False # this should probably stay off
 CLEAN_FACTOR = 3
@@ -34,7 +34,7 @@ ROUNDS_TIMEOUT = 100
 # "rr" = Round Robin
 # "ldg" = least difference geedy
 # "svdap" = SVD alternating projection
-ENCODE_ALGOS = ["ldg"]
+ENCODE_ALGOS = ["rr", "ldg", "svdap"]
 # Sleep times
 SLEEP_BROADCASTS = 0.002
 SLEEP_TESTS = 1.0

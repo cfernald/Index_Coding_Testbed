@@ -25,7 +25,7 @@ while True:
     coeffs = messages.get_coeffs(msg, num_nodes)
     data = messages.get_data(msg)
 
-    if (tid > last_tid or (tid != last_tid and tid == 0)):
+    if (tid == (last_tid + 1) or (tid != last_tid and tid == 0 and last_tid > 50)):
         print("New test... Reseting.\nTID:", tid)
         sys.stdout.flush()
         decoder.reset()
