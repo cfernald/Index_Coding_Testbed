@@ -70,6 +70,17 @@ Object representation of encoded messages. This is used to represent bytes and n
 #### messages.py
 Handles the formatting and created on encoded messages on the server side. This is also used for extracting the metadata on the node side. All message foramatting is contained in this file.
 
+#### decoding.py
+Handles reducing encoded messages to a state where side information can be subtracted. decode_manager.py provides the interface. The main function in decoding.py is gauss(), which provides a precision-preserving form of gaussian elimination.
+
+The first point to notice is that gauss keeps track of "decoding steps" which is a linear combination of the original encoded messages that will produce the accompanying coefficient row. The idea is that you will store the data of the received encoded messages, call gauss(), which will produce some rows with a single entry (a message that can be decoded) and then multiply the first encoded message by the first entry of that row's decoding steps add to the second encoded message scaled by the second entry of that row's decoding steps, and so forth. 
+
+Gauss() will be called after decode_manager calls direct_decode() and removes side information from an encoded message. Gauss() performs row reduction on this side information to expose rows that contain a multiple of only one message (and thus can be divided by this multiple to extract the message). 
+
+Since a precise (without floating point error) linear combination is needed to decode the message, gauss() eliminates rows by scaling rows to the product of the leading coefficient of the other in order to be able to subtract two rows and eliminate the leading coef. This has the potential to produce extremely large coefficients that take a long time to multiply.
+
+A better solution to preserve precision would be to produce a data structure which stores a ratio that can be added, multiplied, divided, and ultimately reduced to an integer. If decoding worked properly, the ratio should resolve to an integer (that represents the original message).
+
 ## Algorithms
 
 ####algo_test.py
