@@ -71,3 +71,48 @@ Object representation of encoded messages. This is used to represent bytes and n
 Handles the formatting and created on encoded messages on the server side. This is also used for extracting the metadata on the node side. All message foramatting is contained in this file.
 
 ## Algorithms
+
+####algo_test.py
+Looking at algo_test.py (a disorganized scratchpad for testing functions) is a good place to start seeing the high level interface for the Index Coding algorithms. 
+
+####timeSVDAP() 
+A function that runs SVD Alternating Projections over a range of Side Info Graphs (with different densities of don't cares). 
+
+####sampleSideInfo() 
+A helper that gives you a randomly generated side info graph and the actual percent of the graph that consists of don't cares. The don't cares are distributed randomly.
+- Note that in real world experiments, though, the messages nodes lose tends to have some correlation, despite efforts to introduce uncorrelated movement and interference. This hurts Index Coding performance since if no node has a particular message as side information, it can't be included in an index code.
+
+####timeLDG() 
+The LDG analogue of timeSVDAP(), but returns slightly different information
+
+####testAPYah() 
+Will produce some plots if you ask nicely.
+
+
+
+##algorithms.py
+
+####LDG()  
+The implementation of the least difference greedy algorithm. The don't care values in the side info graph are assumed to be 2, otherwise it breaks.
+
+####SVDAP()
+The implementation of SVD based alternating projections. There is an implementation of directional AP started, but it wasn't used. SVDAP was the index coding algorithm we spent the most time with (as might be apparent from all the optional parameters)
+- startingMatrix optionally allows you to feed in a matrix from which you start your projections. We experimented with feeding in the result of LDG to start with a lower rank matrix (use expandLDG() to make the result of LDG square in a somewhat strategic way):
+- startSize will be the max in a randomly generated matrix if startingMatrix=None
+- eig_size_tolerance gives the minimum threshold for which a singular value will be considered 0. It's also fed to projectToD() to determine which entries on the diagonal have gotten to close to 0. 
+- precisionDecimals tells how many decimals to round the non-zeros entries of the matrix at each projection (None is an option)
+- max_iterations has a default cap of 100, as this is approximately 1 second of run time on a middling laptop, though the best rank reduction happens after 700 or so iterations
+- return_analysis dictates whether we return just the best rank reduced matrix, or a package of information containing ( [last iteration matrix, last iteration rank, how many iterations run], [lowest rank matrix of any iteration, best (lowest) rank, the iteration where the lowest rank matrix was achieved] )
+
+####projectToD() 
+A helper which takes a matrix and and sets the main diagonal to be non-zero, and zeros out the positions of the matrix which are 0 in the side info graph. 
+It also allows you to optionally round the entries to 'roundPrecision' many decimal place. This is helpful in practice; it actually helps lower the rank for instances where the side info graph is not very dense (I'd guesstimate perhaps 30% or less don't cares)
+
+####thresholdRank() 
+Returns you the number of singular values above the threshold you give. One can also use numpy.linalg.matrix_rank() and specify a tol, or if there is no tol:
+“If tol is None, and S is an array with singular values for M, and eps is the epsilon value for datatype of S, then tol is set to S.max() * max(M.shape) * eps”
+http://docs.scipy.org/doc/numpy-dev/reference/generated/numpy.linalg.matrix_rank.html
+
+
+
+
