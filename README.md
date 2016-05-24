@@ -31,6 +31,8 @@ If for any reason this USB gets lost you can recreate it all by following these 
   14. Run internet script
   15. WiFi USB should not work
 
+If for any reason this USB gets lost, the instruction on how to create this USB is here: https://github.com/lopaka/instructions/blob/master/ubuntu-14.10-install-asus-x205ta.md#prepare-the-usb-flashdrive-to-be-used-as-the-install-media
+
 ## Networking
 The networking for our tests currently works through the use of NetworkManager, so the computer hosting the networking must be running linux with NetworkManager installed. This is will need to be updated to wor with your hardware. You can change the hardware that this uses by editing the /scripts/research-ap to point to the desired mac-address. After this is done, you should simply be able to run ./ap_start and ./ap_stop to start and stop the AP from this directory. Many of thie scripts will not work if the nodes are not username:blue password:screen. I would also recommend adding your ssh keys to the authorized hosts file on the nodes to avoid using passwords during testing. 
 
